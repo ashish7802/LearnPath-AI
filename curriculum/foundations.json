@@ -1,0 +1,400 @@
+[
+  {
+    "id": "comp-101",
+    "track": "foundation",
+    "moduleId": "mod-foundations-01",
+    "moduleTitle": "Digital Foundations & The Machine",
+    "title": "How Computers Actually Work: Hardware, OS & Memory",
+    "slug": "how-computers-work",
+    "difficulty": "beginner",
+    "order": 1,
+    "prerequisites": [],
+    "plainExplanation": "A computer is an ultra-fast calculator that processes instructions using binary (0s and 1s). It has a brain (CPU) that does math, short-term memory (RAM) where active programs sit, and long-term storage (SSD/HDD) where files remain when powered off. The Operating System (Windows/Mac/Linux) manages these resources so your software can run.",
+    "whyItMatters": "Programming is writing step-by-step instructions for the CPU and RAM. If you don't understand how memory stores information, concepts like variables, pointers, and memory leaks will feel like magic.",
+    "learningObjectives": [
+      "Distinguish between CPU processing, RAM (volatile memory), and disk storage (persistent)",
+      "Explain what an Operating System does in plain English",
+      "Understand what a binary digit (bit) and byte represent"
+    ],
+    "estimatedLessonMins": 25,
+    "estimatedPracticeMins": 15,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Thinking saving a file means it is saved in RAM forever",
+      "Confusing operating system commands with hardware instructions"
+    ],
+    "resources": [
+      {
+        "title": "CS50 2026 - Lecture 0: Computational Thinking & Scratch",
+        "url": "https://cs50.harvard.edu/x/2026/weeks/0/",
+        "provider": "Harvard CS50",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "How Computers Work (Khan Academy & Code.org)",
+        "url": "https://www.khanacademy.org/computing/computers-and-internet/how-computers-work",
+        "provider": "Khan Academy",
+        "resourceType": "tutorial",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "Computer Architecture & Operating Systems Mastery Check",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "You are writing a Python script and your computer suddenly loses power. What happens to variables that were stored in RAM but never written to disk?",
+          "options": [
+            "They remain in RAM and will be restored when turned on",
+            "They are completely lost because RAM is volatile memory",
+            "The CPU automatically copies them to the hard drive before dying",
+            "They get saved in the operating system cache file permanently"
+          ],
+          "correctAnswer": "They are completely lost because RAM is volatile memory",
+          "explanation": "RAM (Random Access Memory) requires continuous electrical current to retain data. When power cuts out, all active RAM contents are wiped.",
+          "order": 1
+        },
+        {
+          "questionType": "find_bug",
+          "prompt": "A beginner claims: 'I bought 16 GB of RAM so I have enough space to install 5 large 50 GB games!' What fundamental misunderstanding exists here?",
+          "codeSnippet": null,
+          "options": [
+            "None, RAM is where games are installed permanently",
+            "Confusing RAM (working workspace) with Secondary Storage / SSD (permanent storage)",
+            "Games don't need any RAM to run",
+            "16 GB is too much memory for games"
+          ],
+          "correctAnswer": "Confusing RAM (working workspace) with Secondary Storage / SSD (permanent storage)",
+          "explanation": "Secondary storage (SSD/HDD) stores installed applications permanently. RAM is volatile working memory loaded only while the game or program is actively running.",
+          "order": 2
+        },
+        {
+          "questionType": "explain_rubric",
+          "prompt": "In your own words (or Hinglish: 'Apne shabdon mein'), explain the difference between CPU and RAM using an analogy like a chef and kitchen counter.",
+          "codeSnippet": null,
+          "options": null,
+          "correctAnswer": "CPU is the chef who does the work/cooking; RAM is the kitchen counter where currently needed ingredients sit; SSD/Storage is the pantry where food is kept long term.",
+          "explanation": "A complete answer compares CPU to the active worker/processor and RAM to temporary fast-access workspace.",
+          "rubricCriteria": "[\"Identifies CPU as calculation/execution engine\", \"Identifies RAM as temporary fast workspace\", \"Contrast with persistent storage\"]",
+          "order": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "terminal-101",
+    "track": "foundation",
+    "moduleId": "mod-foundations-01",
+    "moduleTitle": "Digital Foundations & The Machine",
+    "title": "Mastering the Command Line (Terminal & Shell)",
+    "slug": "command-line-fundamentals",
+    "difficulty": "beginner",
+    "order": 2,
+    "prerequisites": ["comp-101"],
+    "plainExplanation": "The terminal is a text-based interface to control your computer. Instead of clicking icons with a mouse (GUI), you type commands (CLI) to create folders, move files, and launch programs. In engineering, almost all servers, cloud tools, and build pipelines run exclusively in the terminal.",
+    "whyItMatters": "Every developer, ML researcher, and data engineer uses the command line every single day. Without it, you cannot run scripts, manage version control, or deploy applications.",
+    "learningObjectives": [
+      "Navigate directory trees using cd, pwd, and ls/dir",
+      "Create, move, rename, and delete files safely",
+      "Understand standard input, output, and exit codes"
+    ],
+    "estimatedLessonMins": 30,
+    "estimatedPracticeMins": 30,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Using relative paths when an absolute path is needed, or vice-versa",
+      "Accidentally deleting non-empty directories without understanding recursive flags"
+    ],
+    "resources": [
+      {
+        "title": "MIT Missing Semester: Course Shell & Scripting",
+        "url": "https://missing.csail.mit.edu/2020/shell-tools/",
+        "provider": "MIT CSAIL",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "Ubuntu Command Line for Beginners",
+        "url": "https://ubuntu.com/tutorials/command-line-for-beginners",
+        "provider": "Canonical Ubuntu",
+        "resourceType": "tutorial",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "Command Line Proficiency Assessment",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "If your current directory is `/home/learner/projects` and you execute `cd ..`, what is your new current directory?",
+          "options": [
+            "/home",
+            "/home/learner",
+            "/home/learner/projects/..",
+            "/root"
+          ],
+          "correctAnswer": "/home/learner",
+          "explanation": "`..` refers to the parent directory. Moving up one level from `projects` lands you in `/home/learner`.",
+          "order": 1
+        },
+        {
+          "questionType": "code_output",
+          "prompt": "Consider running: `mkdir project && cd project && touch main.py && ls`. What will `ls` output?",
+          "codeSnippet": "$ mkdir project && cd project && touch main.py && ls",
+          "options": [
+            "project",
+            "main.py",
+            "An error indicating directory not found",
+            "Empty line"
+          ],
+          "correctAnswer": "main.py",
+          "explanation": "You created `project`, entered it, created `main.py` inside it, and listed files inside it.",
+          "order": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "py-foundations-01",
+    "track": "foundation",
+    "moduleId": "mod-foundations-02",
+    "moduleTitle": "Python Core & Algorithmic Logic",
+    "title": "Variables, Data Types & Operators in Python",
+    "slug": "python-variables-datatypes",
+    "difficulty": "beginner",
+    "order": 3,
+    "prerequisites": ["terminal-101"],
+    "plainExplanation": "A variable is a labeled container in memory where your program stores information to use later (e.g. `age = 21` or `name = 'Maya'`). Python has basic data types: integers (whole numbers), floats (decimals), strings (text), and booleans (True or False).",
+    "whyItMatters": "Variables are the foundational building block of all software. Without them, programs cannot remember user input, calculate results, or make decisions.",
+    "learningObjectives": [
+      "Declare and assign variables following Python naming conventions",
+      "Distinguish between int, float, str, and bool",
+      "Perform arithmetic and logical operations (+, -, *, /, //, %, ==, !=, and, or)"
+    ],
+    "estimatedLessonMins": 35,
+    "estimatedPracticeMins": 45,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Confusing assignment `=` with equality check `==`",
+      "Trying to add a string and an integer directly (e.g. '5' + 5) without type conversion"
+    ],
+    "resources": [
+      {
+        "title": "CS50 Python - Week 0: Functions, Variables",
+        "url": "https://cs50.harvard.edu/python/2022/weeks/0/",
+        "provider": "Harvard CS50",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "Official Python Tutorial - An Informal Introduction to Python",
+        "url": "https://docs.python.org/3/tutorial/introduction.html",
+        "provider": "Python Software Foundation",
+        "resourceType": "documentation",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "codingChallenge": {
+      "title": "Currency & Bill Split Calculator",
+      "instructions": "Write a function `calculate_split(total_bill: float, num_people: int, tip_percentage: float) -> float` that returns the exact amount each person must pay, rounded to 2 decimal places. If num_people is <= 0, return 0.0.",
+      "starterCode": "def calculate_split(total_bill: float, num_people: int, tip_percentage: float) -> float:\n    # Write your logic here\n    pass\n",
+      "language": "python",
+      "visibleTests": [
+        {"input": "100.0, 4, 10.0", "expected": "27.5", "description": "$100 with 10% tip split among 4 people = $27.5 each"},
+        {"input": "50.0, 2, 0.0", "expected": "25.0", "description": "$50 with 0% tip split among 2 people = $25.0 each"}
+      ],
+      "hiddenTests": [
+        {"input": "84.50, 3, 15.0", "expected": "32.39", "description": "Decimal rounding check"},
+        {"input": "100.0, 0, 10.0", "expected": "0.0", "description": "Zero people edge case"}
+      ],
+      "solutionHint": "Calculate total = total_bill * (1 + tip_percentage / 100), then divide by num_people and use round(val, 2)."
+    },
+    "assessment": {
+      "title": "Variables, Types and Operations Quiz",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "code_output",
+          "prompt": "What is the exact output of this code snippet?",
+          "codeSnippet": "x = '10'\ny = 2\nprint(x * y)",
+          "options": [
+            "20",
+            "1010",
+            "TypeError: unsupported operand type",
+            "None"
+          ],
+          "correctAnswer": "1010",
+          "explanation": "Multiplying a string by an integer in Python repeats the string. '10' * 2 results in '1010'. To do math, you must cast with int(x).",
+          "order": 1
+        },
+        {
+          "questionType": "find_bug",
+          "prompt": "Identify the bug in this code attempting to check if a user is an adult:",
+          "codeSnippet": "age = 20\nif age = 18:\n    print('Adult')",
+          "options": [
+            "The variable age is not defined",
+            "Using single '=' (assignment) instead of double '==' (comparison) in the if condition",
+            "Missing parenthesis around age",
+            "print statement syntax is invalid"
+          ],
+          "correctAnswer": "Using single '=' (assignment) instead of double '==' (comparison) in the if condition",
+          "explanation": "In Python, `=` assigns a value. `==` checks for equality.",
+          "order": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "py-foundations-02",
+    "track": "foundation",
+    "moduleId": "mod-foundations-02",
+    "moduleTitle": "Python Core & Algorithmic Logic",
+    "title": "Conditionals, Loops & Control Flow",
+    "slug": "python-conditionals-and-loops",
+    "difficulty": "beginner",
+    "order": 4,
+    "prerequisites": ["py-foundations-01"],
+    "plainExplanation": "Control flow is how a program decides which lines of code to run. Conditionals (if, elif, else) allow programs to make decisions based on rules. Loops (for, while) allow programs to repeat an action dozens or millions of times without writing repetitive code.",
+    "whyItMatters": "Without control flow, code only runs from top to bottom once. Control flow gives software its intelligence and ability to process large amounts of data automatically.",
+    "learningObjectives": [
+      "Use if/elif/else statements to build multi-branch decision trees",
+      "Write for-loops over ranges and sequences",
+      "Use while-loops with proper termination conditions to avoid infinite loops",
+      "Apply break and continue statements correctly"
+    ],
+    "estimatedLessonMins": 40,
+    "estimatedPracticeMins": 50,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Creating infinite while-loops by forgetting to update the loop counter variable",
+      "Off-by-one errors with range(start, stop) where stop is exclusive"
+    ],
+    "resources": [
+      {
+        "title": "CS50 Python - Week 1: Conditionals & Week 2: Loops",
+        "url": "https://cs50.harvard.edu/python/2022/weeks/1/",
+        "provider": "Harvard CS50",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "Python Control Flow Tools (Official Docs)",
+        "url": "https://docs.python.org/3/tutorial/controlflow.html",
+        "provider": "Python Software Foundation",
+        "resourceType": "documentation",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "codingChallenge": {
+      "title": "FizzBuzz with Prime Check",
+      "instructions": "Write a function `fizz_buzz_custom(n: int) -> list[str]` returning a list of strings from 1 to n where multiples of 3 are 'Fizz', multiples of 5 are 'Buzz', multiples of both 3 and 5 are 'FizzBuzz', and other numbers are their string representation (e.g. '1', '2').",
+      "starterCode": "def fizz_buzz_custom(n: int) -> list:\n    # Return list of strings 1 to n\n    result = []\n    return result\n",
+      "language": "python",
+      "visibleTests": [
+        {"input": "5", "expected": "['1', '2', 'Fizz', '4', 'Buzz']", "description": "First 5 numbers"},
+        {"input": "15", "expected": "['1', '2', 'Fizz', '4', 'Buzz', 'Fizz', '7', '8', 'Fizz', 'Buzz', '11', 'Fizz', '13', '14', 'FizzBuzz']", "description": "Includes FizzBuzz at 15"}
+      ],
+      "hiddenTests": [
+        {"input": "1", "expected": "['1']", "description": "Single element edge case"},
+        {"input": "0", "expected": "[]", "description": "Zero returns empty list"}
+      ],
+      "solutionHint": "Check `i % 15 == 0` first before checking `% 3` or `% 5` separately."
+    },
+    "assessment": {
+      "title": "Loops and Control Flow Mastery Quiz",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "code_output",
+          "prompt": "How many times will 'Hello' be printed?",
+          "codeSnippet": "for i in range(1, 5):\n    print('Hello')",
+          "options": ["4 times", "5 times", "1 time", "0 times"],
+          "correctAnswer": "4 times",
+          "explanation": "range(1, 5) generates values [1, 2, 3, 4], stopping before 5. Thus the loop body executes exactly 4 times.",
+          "order": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "py-foundations-03",
+    "track": "foundation",
+    "moduleId": "mod-foundations-02",
+    "moduleTitle": "Python Core & Algorithmic Logic",
+    "title": "Functions, Scope & Clean Code",
+    "slug": "python-functions-and-scope",
+    "difficulty": "beginner",
+    "order": 5,
+    "prerequisites": ["py-foundations-02"],
+    "plainExplanation": "A function is a reusable block of code that takes inputs (arguments), performs calculations, and returns an output. It helps you adhere to the DRY principle: Don't Repeat Yourself. Scope determines where in your code variables can be seen and accessed.",
+    "whyItMatters": "Professional software is made of thousands of small, well-tested functions working together. Without functions, software becomes an unmaintainable wall of spaghetti code.",
+    "learningObjectives": [
+      "Define functions with positional, default, and keyword arguments",
+      "Understand the difference between returning a value and printing it",
+      "Explain local vs global variable scope",
+      "Write docstrings and type hints"
+    ],
+    "estimatedLessonMins": 35,
+    "estimatedPracticeMins": 40,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Using print() inside a function instead of return, preventing the caller from using the result",
+      "Accidentally mutating global variables inside local functions"
+    ],
+    "resources": [
+      {
+        "title": "CS50 Python - Week 0: Defining Functions",
+        "url": "https://cs50.harvard.edu/python/2022/weeks/0/",
+        "provider": "Harvard CS50",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "Function Design & Scope Verification",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "code_output",
+          "prompt": "What does this code output when run?",
+          "codeSnippet": "def add_tax(price, rate=0.1):\n    return price * (1 + rate)\n\nprint(add_tax(100))\nprint(add_tax(100, 0.2))",
+          "options": [
+            "110.0 then 120.0",
+            "100.1 then 100.2",
+            "TypeError: missing argument",
+            "110.0 then 110.0"
+          ],
+          "correctAnswer": "110.0 then 120.0",
+          "explanation": "Default argument `rate=0.1` is used when no second parameter is provided (100 * 1.1 = 110.0). When passed 0.2, it overrides the default (100 * 1.2 = 120.0).",
+          "order": 1
+        }
+      ]
+    }
+  }
+]

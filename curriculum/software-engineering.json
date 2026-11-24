@@ -1,0 +1,235 @@
+[
+  {
+    "id": "swe-git-01",
+    "track": "swe",
+    "moduleId": "mod-swe-workflow",
+    "moduleTitle": "Developer Workflow & Version Control",
+    "title": "Git & GitHub: Commit, Branch & Pull Requests",
+    "slug": "git-and-github-version-control",
+    "difficulty": "beginner",
+    "order": 1,
+    "prerequisites": ["terminal-101"],
+    "plainExplanation": "Git is a time-machine for code. It records every change you make so you can roll back bugs, experiment safely on separate branches, and merge work seamlessly. GitHub is a cloud platform where developers host Git repositories and collaborate through Pull Requests (PRs).",
+    "whyItMatters": "No software engineer works in isolation. Git is the universal collaboration protocol for modern software engineering teams worldwide.",
+    "learningObjectives": [
+      "Initialize repositories, stage changes with git add, and commit with meaningful messages",
+      "Create, switch, and merge git branches",
+      "Resolve merge conflicts without panicking",
+      "Push code to remote repositories and open Pull Requests"
+    ],
+    "estimatedLessonMins": 40,
+    "estimatedPracticeMins": 40,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Committing API secrets or node_modules because .gitignore was missing",
+      "Force pushing (`git push -f`) to shared main branches"
+    ],
+    "resources": [
+      {
+        "title": "MIT Missing Semester: Version Control (Git)",
+        "url": "https://missing.csail.mit.edu/2020/version-control/",
+        "provider": "MIT CSAIL",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "GitHub Skills: Introduction to GitHub",
+        "url": "https://skills.github.com/",
+        "provider": "GitHub",
+        "resourceType": "tutorial",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "Git Workflow & Team Collaboration",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "You modified `app.py`. What command sequence saves this change to your local commit history with a descriptive message?",
+          "options": [
+            "git push origin main",
+            "git add app.py && git commit -m 'Fix authentication bug'",
+            "git checkout -b fix-auth",
+            "git status -m 'Saved changes'"
+          ],
+          "correctAnswer": "git add app.py && git commit -m 'Fix authentication bug'",
+          "explanation": "`git add` stages changes to the index, and `git commit` records staged changes in the local commit history.",
+          "order": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "swe-dsa-01",
+    "track": "swe",
+    "moduleId": "mod-swe-cs",
+    "moduleTitle": "Computer Science & Data Structures",
+    "title": "Data Structures: Arrays, Hash Maps & Complexity (Big-O)",
+    "slug": "data-structures-and-big-o",
+    "difficulty": "intermediate",
+    "order": 2,
+    "prerequisites": ["py-foundations-03"],
+    "plainExplanation": "Data structures are specialized ways to organize and store data in memory so operations can be done efficiently. Big-O notation measures how memory (Space) and computation time (Time) scale as input size grows from 10 items to 10 million items.",
+    "whyItMatters": "An inefficient algorithm with $O(N^2)$ complexity can freeze a server when processing 100,000 users, whereas an $O(N)$ or $O(1)$ algorithm handles it in milliseconds.",
+    "learningObjectives": [
+      "Calculate Time and Space complexity using Big-O notation",
+      "Implement and use Hash Maps / Dictionaries for $O(1)$ average lookups",
+      "Differentiate between dynamic arrays, linked lists, stacks, and queues"
+    ],
+    "estimatedLessonMins": 45,
+    "estimatedPracticeMins": 60,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Using nested loops to search a list when a hash set or dictionary lookup takes $O(1)$ time",
+      "Assuming Big-O measures exact milliseconds rather than asymptotic scaling rate"
+    ],
+    "resources": [
+      {
+        "title": "CS50 2026 - Lecture 3: Algorithms & Lecture 5: Data Structures",
+        "url": "https://cs50.harvard.edu/x/2026/weeks/3/",
+        "provider": "Harvard CS50",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "codingChallenge": {
+      "title": "Two Sum Optimal Hash Map",
+      "instructions": "Given a list of integers `nums` and an integer `target`, return the indices of the two numbers such that they add up to `target` in $O(N)$ time. You may assume exactly one solution exists.",
+      "starterCode": "def two_sum(nums: list[int], target: int) -> list[int]:\n    # Implement O(N) hash map solution\n    seen = {}\n    for i, num in enumerate(nums):\n        pass\n    return []\n",
+      "language": "python",
+      "visibleTests": [
+        {"input": "[2, 7, 11, 15], 9", "expected": "[0, 1]", "description": "2 + 7 = 9 at indices [0, 1]"},
+        {"input": "[3, 2, 4], 6", "expected": "[1, 2]", "description": "2 + 4 = 6 at indices [1, 2]"}
+      ],
+      "hiddenTests": [
+        {"input": "[3, 3], 6", "expected": "[0, 1]", "description": "Duplicate elements check"}
+      ],
+      "solutionHint": "Check if `target - num` is already in `seen`. If yes, return `[seen[target - num], i]`. Otherwise store `seen[num] = i`."
+    },
+    "assessment": {
+      "title": "Algorithmic Complexity & Hash Structures",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "What is the average time complexity of looking up a key in a Python dictionary / Hash Table?",
+          "options": ["O(1)", "O(log N)", "O(N)", "O(N^2)"],
+          "correctAnswer": "O(1)",
+          "explanation": "Hash tables compute a hash of the key to index directly into a bucket array, providing constant O(1) time on average.",
+          "order": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "swe-sql-01",
+    "track": "swe",
+    "moduleId": "mod-swe-db",
+    "moduleTitle": "Databases & Systems Architecture",
+    "title": "Relational Databases, SQL & Data Modeling",
+    "slug": "relational-databases-and-sql",
+    "difficulty": "intermediate",
+    "order": 3,
+    "prerequisites": ["py-foundations-03"],
+    "plainExplanation": "A relational database (like PostgreSQL or SQLite) stores structured data in tables with rows and columns, linked by foreign keys. SQL (Structured Query Language) is the standardized language to query, insert, update, and manage this data with ACID reliability.",
+    "whyItMatters": "Applications require persistent, consistent data. Whether managing bank transactions or social media posts, software engineers must design clean schemas and prevent data anomalies.",
+    "learningObjectives": [
+      "Design normalized database schemas with Primary and Foreign Keys",
+      "Write SQL SELECT, INSERT, UPDATE, DELETE, and JOIN queries",
+      "Understand indexes and query optimization principles"
+    ],
+    "estimatedLessonMins": 40,
+    "estimatedPracticeMins": 45,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Performing filtering in client memory instead of writing an indexed SQL WHERE clause",
+      "Neglecting Foreign Key constraints leading to orphaned database records"
+    ],
+    "resources": [
+      {
+        "title": "CS50 2026 - Lecture 7: SQL",
+        "url": "https://cs50.harvard.edu/x/2026/weeks/7/",
+        "provider": "Harvard CS50",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "SQL & Relational Integrity Assessment",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "Which SQL JOIN returns all rows from the left table, and the matched rows from the right table (filling with NULL if no match)?",
+          "options": ["INNER JOIN", "LEFT JOIN", "RIGHT JOIN", "CROSS JOIN"],
+          "correctAnswer": "LEFT JOIN",
+          "explanation": "A LEFT JOIN keeps every row from the left table regardless of whether there is a matching row in the right table.",
+          "order": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "swe-api-01",
+    "track": "swe",
+    "moduleId": "mod-swe-backend",
+    "moduleTitle": "Web Architecture & APIs",
+    "title": "HTTP, REST APIs & Backend Services",
+    "slug": "http-rest-apis-and-backend",
+    "difficulty": "intermediate",
+    "order": 4,
+    "prerequisites": ["swe-sql-01"],
+    "plainExplanation": "Web communication relies on HTTP protocols. Clients (browsers, mobile apps) send HTTP requests (GET, POST, PUT, DELETE) with headers and JSON payloads to server endpoints. The server processes business logic, talks to the database, and sends back HTTP status codes and responses.",
+    "whyItMatters": "Modern software systems are distributed. Mastering APIs enables you to build full-stack web applications, microservices, and mobile app backends.",
+    "learningObjectives": [
+      "Understand HTTP methods (GET, POST, PUT, DELETE) and status codes (200, 201, 400, 401, 404, 500)",
+      "Build RESTful endpoints returning structured JSON responses",
+      "Implement authentication tokens and request validation"
+    ],
+    "estimatedLessonMins": 45,
+    "estimatedPracticeMins": 50,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Using GET requests for operations that mutate database state",
+      "Returning status 200 OK when an internal server exception occurred"
+    ],
+    "resources": [
+      {
+        "title": "MDN Web Docs - HTTP Overview & Methods",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP",
+        "provider": "Mozilla MDN",
+        "resourceType": "documentation",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "HTTP & API Design Verification",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "Which HTTP status code indicates a resource was successfully created on the server?",
+          "options": ["200 OK", "201 Created", "204 No Content", "302 Found"],
+          "correctAnswer": "201 Created",
+          "explanation": "201 Created is the standard HTTP status code for successful resource creation via POST/PUT.",
+          "order": 1
+        }
+      ]
+    }
+  }
+]

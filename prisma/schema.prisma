@@ -1,0 +1,291 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String                @id @default(uuid())
+  email          String                @unique
+  passwordHash   String
+  name           String
+  role           String                @default("learner") // learner, educator, admin
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+  profile        UserProfile?
+  enrollments    UserEnrollment[]
+  topicProgress  UserTopicProgress[]
+  assessmentAttempts AssessmentAttempt[]
+  codeSubmissions CodeSubmission[]
+  projectSubmissions ProjectSubmission[]
+  studySessions  StudySession[]
+  revisionItems  RevisionItem[]
+  aiConversations AiCoachMessage[]
+}
+
+model UserProfile {
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  careerGoal         String   @default("software-engineer") // software-engineer, ml-engineer, ai-engineer
+  experienceLevel    String   @default("absolute-zero") // absolute-zero, tried-coding, intermediate
+  preferredLanguage  String   @default("english") // english, hindi, hinglish
+  mathComfort        String   @default("basic") // weak, basic, comfortable, strong
+  dailyStudyMinutes  Int      @default(60)
+  availableDays      String   @default("mon,tue,wed,thu,fri,sat,sun")
+  preferredMethod    String   @default("practice-first") // practice-first, video-first, reading-first
+  deviceType         String   @default("browser-only") // low-spec, browser-only, standard-pc
+  targetMilestone    String   @default("job-ready") // fundamentals, build-projects, internship, job-ready
+  onboardingCompleted Boolean @default(false)
+  diagnosticScore    Int?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model CareerPath {
+  id          String         @id
+  title       String
+  slug        String         @unique
+  description String
+  icon        String
+  tracks      LearningTrack[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model LearningTrack {
+  id           String      @id
+  careerPathId String
+  careerPath   CareerPath  @relation(fields: [careerPathId], references: [id], onDelete: Cascade)
+  title        String
+  order        Int
+  modules      Module[]
+}
+
+model Module {
+  id          String        @id
+  trackId     String
+  track       LearningTrack @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  order       Int
+  topics      Topic[]
+}
+
+model Topic {
+  id                   String              @id
+  moduleId             String
+  module               Module              @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  title                String
+  slug                 String              @unique
+  difficulty           String              @default("beginner") // beginner, intermediate, advanced
+  order                Int
+  plainExplanation     String
+  whyItMatters         String
+  learningObjectives   String              // JSON array
+  estimatedLessonMins  Int                 @default(30)
+  estimatedPracticeMins Int                @default(30)
+  assessmentType       String              @default("comprehensive") // mcq, coding, explanation, comprehensive
+  masteryThreshold     Int                 @default(80) // Out of 100
+  commonMistakes       String              // JSON array
+  revisionNotes        String?
+  sourceVerificationDate String            @default("2026-03")
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+
+  resources            TopicResource[]
+  prerequisites        TopicPrerequisite[] @relation("DependentTopic")
+  dependents           TopicPrerequisite[] @relation("PrerequisiteTopic")
+  userProgress         UserTopicProgress[]
+  assessments          Assessment[]
+  codingChallenges     CodingChallenge[]
+  revisionItems        RevisionItem[]
+}
+
+model TopicPrerequisite {
+  id             String   @id @default(uuid())
+  topicId        String
+  topic          Topic    @relation("DependentTopic", fields: [topicId], references: [id], onDelete: Cascade)
+  prerequisiteId String
+  prerequisite   Topic    @relation("PrerequisiteTopic", fields: [prerequisiteId], references: [id], onDelete: Cascade)
+
+  @@unique([topicId, prerequisiteId])
+}
+
+model TopicResource {
+  id           String   @id @default(uuid())
+  topicId      String
+  topic        Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  title        String
+  url          String
+  provider     String   // Harvard CS50, MIT OCW, Python Docs, MDN, Kaggle, HuggingFace, etc.
+  resourceType String   // primary-free, documentation, video, tutorial, practice
+  language     String   @default("en")
+  isFree       Boolean  @default(true)
+  verifiedAt   String   @default("2026-03")
+}
+
+model UserEnrollment {
+  id           String      @id @default(uuid())
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  careerPathId String
+  enrolledAt   DateTime    @default(now())
+  isActive     Boolean     @default(true)
+
+  @@unique([userId, careerPathId])
+}
+
+model UserTopicProgress {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topicId         String
+  topic           Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  status          String    @default("NOT_STARTED") // NOT_STARTED, IN_PROGRESS, STUDIED, ASSESSMENT_PENDING, MASTERED, NEEDS_REVISION
+  bestScore       Int?
+  attemptsCount   Int       @default(0)
+  firstStudiedAt  DateTime?
+  masteredAt      DateTime?
+  lastAttemptAt   DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([userId, topicId])
+}
+
+model Assessment {
+  id             String              @id @default(uuid())
+  topicId        String
+  topic          Topic               @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  title          String
+  passingScore   Int                 @default(80)
+  questions      Question[]
+  attempts       AssessmentAttempt[]
+}
+
+model Question {
+  id             String      @id @default(uuid())
+  assessmentId   String
+  assessment     Assessment  @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  questionType   String      // mcq, multi_select, code_output, find_bug, explain_rubric
+  prompt         String
+  codeSnippet    String?
+  optionsJson    String?     // JSON array of string options
+  correctAnswer  String      // For deterministic matching or rubric key
+  explanation    String
+  rubricCriteria String?     // JSON for open-ended / explanation grading
+  order          Int
+}
+
+model AssessmentAttempt {
+  id           String      @id @default(uuid())
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assessmentId String
+  assessment   Assessment  @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  score        Int
+  passed       Boolean
+  answersJson  String      // Record of user answers
+  feedbackJson String      // Detailed feedback per question
+  createdAt    DateTime    @default(now())
+}
+
+model CodingChallenge {
+  id             String           @id @default(uuid())
+  topicId        String
+  topic          Topic            @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  title          String
+  instructions   String
+  starterCode    String
+  language       String           @default("python") // python, javascript
+  visibleTests   String           // JSON array [{input, expected, description}]
+  hiddenTests    String           // JSON array [{input, expected, description}]
+  solutionHint   String
+  timeLimitMs    Int              @default(5000)
+  submissions    CodeSubmission[]
+}
+
+model CodeSubmission {
+  id          String          @id @default(uuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challengeId String
+  challenge   CodingChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  submittedCode String
+  passed      Boolean
+  testsPassed Int
+  testsTotal  Int
+  outputLog   String?
+  createdAt   DateTime        @default(now())
+}
+
+model Project {
+  id            String              @id
+  title         String
+  careerPathId  String
+  phaseNumber   Int
+  description   String
+  objectives    String              // JSON array
+  requirements  String              // JSON array
+  deliverables  String              // JSON array
+  rubricJson    String              // JSON rubric criteria
+  starterRepoUrl String?
+  submissions   ProjectSubmission[]
+}
+
+model ProjectSubmission {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId    String
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  repoUrl      String
+  demoUrl      String?
+  reflection   String
+  status       String   @default("SUBMITTED") // SUBMITTED, REVIEWED, APPROVED, REVISE
+  score        Int?
+  feedback     String?
+  createdAt    DateTime @default(now())
+}
+
+model RevisionItem {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topicId         String
+  topic           Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  nextReviewDate  DateTime
+  intervalDays    Int      @default(1)
+  repetitionCount Int      @default(0)
+  easeFactor      Float    @default(2.5) // SuperMemo-2 SM-2 ease factor
+  lastReviewedAt  DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([userId, topicId])
+}
+
+model StudySession {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionType    String   // revision, new_lesson, practice, assessment, project
+  durationMins   Int
+  notes          String?
+  completedAt    DateTime @default(now())
+}
+
+model AiCoachMessage {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topicId   String?
+  role      String   // user, assistant, system
+  language  String   @default("english") // english, hindi, hinglish
+  content   String
+  createdAt DateTime @default(now())
+}

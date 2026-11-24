@@ -1,0 +1,195 @@
+[
+  {
+    "id": "ai-llm-01",
+    "track": "ai",
+    "moduleId": "mod-ai-llm",
+    "moduleTitle": "Large Language Models & Prompt Engineering",
+    "title": "LLM Fundamentals: Tokens, Embeddings & Context Windows",
+    "slug": "llm-tokens-embeddings-context",
+    "difficulty": "intermediate",
+    "order": 1,
+    "prerequisites": ["py-foundations-03"],
+    "plainExplanation": "Large Language Models (LLMs) are probabilistic next-token predictors trained on vast text corpora. Text is divided into tokens (subwords). High-dimensional vector embeddings capture semantic meaning where geometrically closer vectors share conceptual similarity. The context window is the finite working memory of the model.",
+    "whyItMatters": "AI Engineering isn't just calling `client.chat.completions.create()`. Understanding token budgets, semantic distance, and context constraints is critical for cost, latency, and reliability.",
+    "learningObjectives": [
+      "Understand how tokenizers (BPE) split text and affect pricing and context limits",
+      "Compute semantic similarity using cosine distance on vector embeddings",
+      "Design few-shot prompts with structured JSON output constraints"
+    ],
+    "estimatedLessonMins": 40,
+    "estimatedPracticeMins": 45,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Assuming 1 token = 1 word (typically 100 tokens ~ 75 words in English; non-Latin scripts consume far more tokens)",
+      "Expecting the model to memorize state across independent API calls without passing conversation history"
+    ],
+    "resources": [
+      {
+        "title": "Hugging Face Learn: NLP Course - Tokenizers & Embeddings",
+        "url": "https://huggingface.co/learn/nlp-course",
+        "provider": "Hugging Face",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "Microsoft AI for Beginners: Natural Language Processing",
+        "url": "https://github.com/microsoft/AI-For-Beginners",
+        "provider": "Microsoft",
+        "resourceType": "tutorial",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "codingChallenge": {
+      "title": "Cosine Similarity for Semantic Embeddings",
+      "instructions": "Write a function `cosine_similarity(vec_a: list[float], vec_b: list[float]) -> float` that computes the cosine similarity between two non-empty vectors: dot(a, b) / (norm(a) * norm(b)). Return 0.0 if either norm is zero or vectors have different lengths. Round result to 4 decimal places.",
+      "starterCode": "import math\n\ndef cosine_similarity(vec_a: list[float], vec_b: list[float]) -> float:\n    # Implement cosine similarity\n    if len(vec_a) != len(vec_b) or not vec_a:\n        return 0.0\n    pass\n",
+      "language": "python",
+      "visibleTests": [
+        {"input": "[1.0, 0.0], [1.0, 0.0]", "expected": "1.0", "description": "Identical vectors have similarity 1.0"},
+        {"input": "[1.0, 0.0], [0.0, 1.0]", "expected": "0.0", "description": "Orthogonal vectors have similarity 0.0"}
+      ],
+      "hiddenTests": [
+        {"input": "[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]", "expected": "1.0", "description": "3D identical vectors"},
+        {"input": "[0.0, 0.0], [1.0, 1.0]", "expected": "0.0", "description": "Zero norm vector returns 0.0"}
+      ],
+      "solutionHint": "Calculate dot product sum(a*b), norm_a = sqrt(sum(a*a)), norm_b = sqrt(sum(b*b)). Check division by zero."
+    },
+    "assessment": {
+      "title": "Tokens, Embeddings and LLM Fundamentals",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "If two text sentences have an embedding cosine similarity of 0.96, what does this indicate?",
+          "options": [
+            "The sentences have identical character counts",
+            "The sentences share strong semantic meaning and context in the vector space",
+            "The sentences are written in different languages",
+            "The model suffered an internal calculation error"
+          ],
+          "correctAnswer": "The sentences share strong semantic meaning and context in the vector space",
+          "explanation": "Cosine similarity measures the angle between vectors. A value near 1.0 indicates high semantic alignment in the embedding space.",
+          "order": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "ai-rag-01",
+    "track": "ai",
+    "moduleId": "mod-ai-rag",
+    "moduleTitle": "Retrieval-Augmented Generation (RAG) & Vector DBs",
+    "title": "Building Production RAG Systems with Vector Databases",
+    "slug": "production-rag-and-vector-databases",
+    "difficulty": "advanced",
+    "order": 2,
+    "prerequisites": ["ai-llm-01"],
+    "plainExplanation": "Retrieval-Augmented Generation (RAG) connects an LLM to external, proprietary, or private documents. Documents are chunked, embedded into vectors, and stored in a vector database. At query time, the system retrieves the most relevant chunks via semantic search and injects them into the prompt as verified grounding context.",
+    "whyItMatters": "LLMs hallucinate and their knowledge cuts off. RAG enables enterprise search, domain-specific AI assistants, and customer support bots with zero hallucination and verifiable citations.",
+    "learningObjectives": [
+      "Implement chunking strategies (fixed-size, semantic, recursive character)",
+      "Store and query embeddings in vector stores with metadata filtering",
+      "Formulate grounded prompts that enforce source attribution and cite references",
+      "Evaluate retrieval quality using Hit Rate and MRR (Mean Reciprocal Rank)"
+    ],
+    "estimatedLessonMins": 50,
+    "estimatedPracticeMins": 60,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Using overly large chunks that dilute semantic signal or exceed token budgets",
+      "Failing to instruct the LLM to admit 'I do not have enough context' when retrieved chunks lack the answer"
+    ],
+    "resources": [
+      {
+        "title": "Hugging Face: Retrieval-Augmented Generation (RAG) Guide",
+        "url": "https://huggingface.co/learn/cookbook/en/rag_with_hf_and_langchain",
+        "provider": "Hugging Face",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "RAG Architecture and Retrieval Evaluation",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "What is the primary function of chunking documents before embedding them into a vector database?",
+          "options": [
+            "To encrypt sensitive data before transmission",
+            "To keep context focused and within model embedding limits so search queries match precise passages rather than vague entire books",
+            "To translate text into binary format",
+            "To speed up disk read times on the client"
+          ],
+          "correctAnswer": "To keep context focused and within model embedding limits so search queries match precise passages rather than vague entire books",
+          "explanation": "Chunking isolates cohesive semantic concepts, ensuring semantic search returns precise paragraphs matching the user's question.",
+          "order": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "ai-agents-01",
+    "track": "ai",
+    "moduleId": "mod-ai-agents",
+    "moduleTitle": "Autonomous Agents & Tool Calling",
+    "title": "Function Calling, ReAct Agents & Guardrails",
+    "slug": "ai-agents-tool-calling-guardrails",
+    "difficulty": "advanced",
+    "order": 3,
+    "prerequisites": ["ai-rag-01"],
+    "plainExplanation": "An AI Agent combines an LLM with external tools (APIs, databases, web search, calculators) and a reasoning loop (like ReAct: Reason, Act, Observe). Instead of only generating text, the model emits structured function calls to take actions in the digital world.",
+    "whyItMatters": "Agents turn passive chatbots into autonomous systems capable of executing multi-step workflows, writing code, booking reservations, and diagnosing complex issues.",
+    "learningObjectives": [
+      "Define JSON schemas for tool calling and parse model function invocation payloads",
+      "Implement the ReAct loop: thought -> tool action -> observation -> final answer",
+      "Apply security guardrails to sanitize inputs and prevent prompt injection"
+    ],
+    "estimatedLessonMins": 55,
+    "estimatedPracticeMins": 65,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Allowing agents to execute destructive database commands without human-in-the-loop confirmation",
+      "Unbounded agent loops that burn infinite API tokens when tools fail"
+    ],
+    "resources": [
+      {
+        "title": "LangChain & Agentic AI Systems Documentation",
+        "url": "https://python.langchain.com/docs/concepts/agents/",
+        "provider": "LangChain",
+        "resourceType": "documentation",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "Agentic Reasoning & Tool Orchestration",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "In a tool-calling architecture, how does an LLM execute a function like `check_weather(city='London')`?",
+          "options": [
+            "The LLM directly sends an HTTP request from its neural weights to the external API",
+            "The LLM outputs a structured JSON description specifying the function name and arguments; the application runtime executes the function and feeds results back to the LLM",
+            "The LLM compiles the Python code into machine language",
+            "External tools run automatically on the client without LLM involvement"
+          ],
+          "correctAnswer": "The LLM outputs a structured JSON description specifying the function name and arguments; the application runtime executes the function and feeds results back to the LLM",
+          "explanation": "LLMs do not have direct network sockets or execution environments; they generate structured tool call requests which the host runtime executes safely.",
+          "order": 1
+        }
+      ]
+    }
+  }
+]

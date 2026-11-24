@@ -1,0 +1,94 @@
+[
+  {
+    "id": "proj-foundation-cli",
+    "careerPathId": "software-engineer",
+    "phaseNumber": 1,
+    "title": "Personal Budget & Expense Tracking CLI",
+    "description": "Build an interactive command-line expense tracker in Python that records transactions, saves data to a local file, computes monthly summaries, and formats category breakdowns.",
+    "objectives": [
+      "Demonstrate mastery of variables, loops, conditionals, and functions",
+      "Read and write data safely using JSON or CSV file storage",
+      "Handle invalid user inputs gracefully without crashing"
+    ],
+    "requirements": [
+      "CLI menu with options: Add Expense, List Expenses, View Summary, Exit",
+      "Persistent storage in expenses.json",
+      "Input validation for amounts (positive floats) and date formats",
+      "Unit tests verifying calculation functions"
+    ],
+    "deliverables": [
+      "GitHub repository URL with main.py and test_expenses.py",
+      "README.md with setup instructions and sample run terminal output"
+    ],
+    "rubricJson": "{\"functionality\": 40, \"code_cleanliness\": 25, \"error_handling\": 20, \"documentation\": 15}"
+  },
+  {
+    "id": "proj-swe-api",
+    "careerPathId": "software-engineer",
+    "phaseNumber": 2,
+    "title": "Full-Stack Task & Workflow Management API",
+    "description": "Design and build a RESTful API service with database persistence, relational foreign key constraints, authentication, and comprehensive test suites.",
+    "objectives": [
+      "Build REST endpoints with standard status codes and payload validation",
+      "Design relational database schema with users, projects, and task items",
+      "Implement JWT authentication and resource ownership checks"
+    ],
+    "requirements": [
+      "CRUD endpoints for tasks with pagination and status filtering",
+      "Relational SQLite / PostgreSQL schema with foreign keys",
+      "Automated integration test suite with >80% code coverage",
+      "Dockerized container for local reproduction"
+    ],
+    "deliverables": [
+      "GitHub repo with source code, migrations, and Dockerfile",
+      "Postman/Thunder client test collection or OpenAPI specification"
+    ],
+    "rubricJson": "{\"api_design\": 35, \"database_integrity\": 30, \"testing\": 20, \"security\": 15}"
+  },
+  {
+    "id": "proj-ml-housing",
+    "careerPathId": "ml-engineer",
+    "phaseNumber": 2,
+    "title": "End-to-End Real Estate Valuation & Feature Engineering Pipeline",
+    "description": "Develop a reproducible machine learning pipeline that cleans tabular housing data, engineers geographical and temporal features, evaluates regression models, and outputs a trained model artifact.",
+    "objectives": [
+      "Perform thorough exploratory data analysis (EDA) with distribution plots",
+      "Implement robust missing value imputation and scaling pipelines without data leakage",
+      "Compare multiple regression models using cross-validation and RMSE/MAE"
+    ],
+    "requirements": [
+      "Jupyter Notebook or clean modular Python scripts",
+      "Scikit-learn ColumnTransformer and Pipeline architecture",
+      "Hyperparameter tuning using GridSearchCV or Optuna",
+      "Exported model bundle with inference prediction script"
+    ],
+    "deliverables": [
+      "GitHub repository containing data pipeline, train script, and inference script",
+      "Written report analyzing model feature importance and limitations"
+    ],
+    "rubricJson": "{\"data_prep\": 30, \"pipeline_architecture\": 30, \"evaluation_rigor\": 25, \"clarity\": 15}"
+  },
+  {
+    "id": "proj-ai-assistant",
+    "careerPathId": "ai-engineer",
+    "phaseNumber": 2,
+    "title": "Production Document Q&A Agent with Grounded RAG & Citations",
+    "description": "Build an intelligent RAG application that ingests technical PDFs or documentation, embeds chunks into a vector database, retrieves grounded context, and answers questions with direct citations.",
+    "objectives": [
+      "Implement recursive chunking and vector embedding generation",
+      "Build semantic retrieval pipeline with cosine similarity and threshold filtering",
+      "Synthesize answers citing exact section sources while preventing hallucination"
+    ],
+    "requirements": [
+      "Vector store integration (Chroma / FAISS / Qdrant)",
+      "Strict citation rubric ensuring no fabricated facts",
+      "Interactive web interface or CLI to ask questions",
+      "Evaluation benchmark testing retrieval accuracy"
+    ],
+    "deliverables": [
+      "GitHub repository with ingestion script, retrieval agent, and web UI",
+      "Demonstration video or interactive live URL"
+    ],
+    "rubricJson": "{\"retrieval_quality\": 35, \"citation_fidelity\": 30, \"architecture\": 20, \"ux\": 15}"
+  }
+]

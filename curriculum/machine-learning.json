@@ -1,0 +1,212 @@
+[
+  {
+    "id": "ml-data-01",
+    "track": "ml",
+    "moduleId": "mod-ml-data",
+    "moduleTitle": "Data Foundations for Machine Learning",
+    "title": "NumPy & Pandas: Vectorized Computing & Data Cleaning",
+    "slug": "numpy-pandas-data-wrangling",
+    "difficulty": "intermediate",
+    "order": 1,
+    "prerequisites": ["py-foundations-03"],
+    "plainExplanation": "Machine learning algorithms don't read text or spreadsheets directly; they perform operations on multi-dimensional numerical arrays (tensors). NumPy provides ultra-fast C-backed numerical arrays, while Pandas provides DataFrames for filtering, handling missing values, and cleaning tabular data.",
+    "whyItMatters": "80% of real-world machine learning engineering is data wrangling. If data has nulls, bad encodings, or invalid types, even state-of-the-art models will fail ('garbage in, garbage out').",
+    "learningObjectives": [
+      "Manipulate multi-dimensional arrays using NumPy slicing, broadcasting, and vectorization",
+      "Load, filter, transform, and group data using Pandas DataFrames",
+      "Detect and impute missing values, handle outliers, and encode categorical variables"
+    ],
+    "estimatedLessonMins": 45,
+    "estimatedPracticeMins": 50,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Writing slow Python for-loops instead of vectorized NumPy/Pandas operations",
+      "Modifying a DataFrame slice without realizing it is a view, triggering SettingWithCopyWarning"
+    ],
+    "resources": [
+      {
+        "title": "Microsoft Data Science for Beginners: Working with Data",
+        "url": "https://github.com/microsoft/Data-Science-For-Beginners",
+        "provider": "Microsoft",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "NumPy Quickstart Tutorial (Official Docs)",
+        "url": "https://numpy.org/doc/stable/user/quickstart.html",
+        "provider": "NumPy Org",
+        "resourceType": "documentation",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "codingChallenge": {
+      "title": "Feature Normalization & Min-Max Scaling",
+      "instructions": "Write a function `min_max_scale(values: list[float]) -> list[float]` that scales a list of numbers to the range [0.0, 1.0] using formula (x - min) / (max - min). If all values are identical or the list has < 2 items, return a list of 0.0s.",
+      "starterCode": "def min_max_scale(values: list[float]) -> list[float]:\n    # Implement min-max scaling\n    if len(values) < 2:\n        return [0.0] * len(values)\n    pass\n",
+      "language": "python",
+      "visibleTests": [
+        {"input": "[10.0, 20.0, 30.0]", "expected": "[0.0, 0.5, 1.0]", "description": "Standard linear scale"},
+        {"input": "[5.0, 5.0, 5.0]", "expected": "[0.0, 0.0, 0.0]", "description": "Identical values edge case"}
+      ],
+      "hiddenTests": [
+        {"input": "[0.0, 100.0]", "expected": "[0.0, 1.0]", "description": "Two elements boundary check"}
+      ],
+      "solutionHint": "Find min_val and max_val. If max_val == min_val, return zeros. Otherwise calculate (v - min_val)/(max_val - min_val) for each value."
+    },
+    "assessment": {
+      "title": "Vectorized Operations and Array Foundations",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "Why are vectorized NumPy operations dozens of times faster than standard Python loops over lists?",
+          "options": [
+            "NumPy compiles code into JavaScript",
+            "NumPy arrays store contiguous homogeneous data in memory and execute compiled C loops without type checking overhead",
+            "NumPy automatically offloads everything to the GPU by default",
+            "Python lists cannot store numbers"
+          ],
+          "correctAnswer": "NumPy arrays store contiguous homogeneous data in memory and execute compiled C loops without type checking overhead",
+          "explanation": "Contiguous memory layout allows CPU vector instructions (SIMD) and eliminates Python's dynamic type-checking overhead.",
+          "order": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "ml-supervised-01",
+    "track": "ml",
+    "moduleId": "mod-ml-core",
+    "moduleTitle": "Supervised Learning & Model Evaluation",
+    "title": "Supervised Learning: Regression, Classification & Validation",
+    "slug": "supervised-learning-scikit-learn",
+    "difficulty": "intermediate",
+    "order": 2,
+    "prerequisites": ["ml-data-01"],
+    "plainExplanation": "In supervised learning, models learn mathematical mapping functions from labeled input examples $(X)$ to known targets $(y)$. Regression predicts continuous numerical outputs (like house prices), while Classification predicts categorical classes (like fraud vs legitimate). Proper train/test splitting and cross-validation prevent overfitting.",
+    "whyItMatters": "Supervised learning powers recommendation feeds, medical diagnosis systems, spam filters, and financial forecasting. Understanding bias-variance tradeoffs ensures your models perform in production, not just on training sets.",
+    "learningObjectives": [
+      "Distinguish between Regression (continuous) and Classification (discrete)",
+      "Train Linear Regression, Logistic Regression, and Decision Trees using Scikit-Learn",
+      "Evaluate models using RMSE, MAE, Precision, Recall, F1-Score, and ROC-AUC",
+      "Prevent data leakage and apply k-fold cross-validation"
+    ],
+    "estimatedLessonMins": 50,
+    "estimatedPracticeMins": 60,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Evaluating a model on the same data it was trained on (overfitting delusion)",
+      "Fitting feature scalers (like StandardScaler) on the entire dataset before splitting train/test (data leakage)"
+    ],
+    "resources": [
+      {
+        "title": "Google Machine Learning Crash Course",
+        "url": "https://developers.google.com/machine-learning/crash-course",
+        "provider": "Google Developers",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "Scikit-Learn User Guide: Supervised Learning",
+        "url": "https://scikit-learn.org/stable/supervised_learning.html",
+        "provider": "Scikit-Learn",
+        "resourceType": "documentation",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "Supervised Learning & Validation Metrics",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "In a cancer detection model where failing to identify a malignant tumor can be fatal, which metric is most critical to maximize?",
+          "options": [
+            "Accuracy",
+            "Recall (Sensitivity)",
+            "Precision",
+            "Training loss"
+          ],
+          "correctAnswer": "Recall (Sensitivity)",
+          "explanation": "Recall measures True Positives / (True Positives + False Negatives). High recall minimizes False Negatives (cases where cancer was present but missed).",
+          "order": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "ml-deeplearning-01",
+    "track": "ml",
+    "moduleId": "mod-ml-deep",
+    "moduleTitle": "Neural Networks & Deep Learning",
+    "title": "Deep Learning Fundamentals & PyTorch",
+    "slug": "deep-learning-and-pytorch",
+    "difficulty": "advanced",
+    "order": 3,
+    "prerequisites": ["ml-supervised-01"],
+    "plainExplanation": "Deep learning models (neural networks) stack layers of artificial neurons that transform raw inputs into hierarchical representations. PyTorch provides computational graphs with automatic differentiation (autograd) and GPU acceleration to train complex models with backpropagation and gradient descent.",
+    "whyItMatters": "Deep learning enables computer vision, speech recognition, machine translation, and autonomous vehicles where manual feature engineering fails.",
+    "learningObjectives": [
+      "Understand forward propagation, loss functions, backpropagation, and gradient descent",
+      "Build feed-forward neural networks using PyTorch torch.nn",
+      "Configure optimizers (Adam, SGD) and learning rate schedulers"
+    ],
+    "estimatedLessonMins": 55,
+    "estimatedPracticeMins": 65,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Forgetting optimizer.zero_grad() before loss.backward() in the PyTorch training loop",
+      "Using inappropriate loss functions (e.g. MSE for multi-class classification instead of CrossEntropyLoss)"
+    ],
+    "resources": [
+      {
+        "title": "Fast.ai: Practical Deep Learning for Coders",
+        "url": "https://course.fast.ai/",
+        "provider": "fast.ai",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "PyTorch Official Tutorials: Deep Learning with PyTorch: A 60 Minute Blitz",
+        "url": "https://pytorch.org/tutorials/beginner/deep_learning_60min_blitz.html",
+        "provider": "PyTorch",
+        "resourceType": "documentation",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "Neural Network Architecture & PyTorch Mechanics",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "Why is `optimizer.zero_grad()` required in every iteration of a standard PyTorch training loop?",
+          "options": [
+            "It resets the weights of the neural network to zero",
+            "PyTorch accumulates gradients across backward() calls by default, so they must be cleared before the next batch",
+            "It turns off GPU memory allocation",
+            "It resets the dataset batch index"
+          ],
+          "correctAnswer": "PyTorch accumulates gradients across backward() calls by default, so they must be cleared before the next batch",
+          "explanation": "By default, `.backward()` adds gradients to `.grad`. Calling `zero_grad()` clears old gradients before computing new ones for the current mini-batch.",
+          "order": 1
+        }
+      ]
+    }
+  }
+]
