@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifySessionToken } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { getTopicById, computeTopicLockStatus } from '@/lib/curriculum';
+import { studyProgressSchema } from '@/lib/validations';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,7 +14,15 @@ export async function POST(req: NextRequest) {
     const session = await verifySessionToken(token);
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { topicId } = await req.json();
+    const body = await req.json().catch(() => null);
+    if (!body) return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+
+    const validation = studyProgressSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json({ error: 'Invalid topic ID' }, { status: 400 });
+    }
+
+    const { topicId } = validation.data;
     const topic = getTopicById(topicId);
     if (!topic) return NextResponse.json({ error: 'Topic not found' }, { status: 404 });
 

@@ -12,13 +12,16 @@ import {
   FolderGit2,
   LogOut,
   User,
-  GraduationCap
+  GraduationCap,
+  Menu,
+  X
 } from 'lucide-react';
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     fetch('/api/auth/me')
@@ -32,6 +35,7 @@ export default function Navbar() {
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
     setCurrentUser(null);
+    setMobileMenuOpen(false);
     router.push('/login');
   };
 
@@ -54,7 +58,7 @@ export default function Navbar() {
           <span className="text-white font-semibold tracking-tight">LearnPath <span className="text-indigo-400">AI</span></span>
         </Link>
 
-        {/* Links */}
+        {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center space-x-1">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -76,8 +80,8 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* User Status / Auth */}
-        <div className="flex items-center gap-3">
+        {/* User Status / Auth / Mobile Toggle */}
+        <div className="flex items-center gap-2 sm:gap-3">
           {currentUser ? (
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex flex-col text-right">
@@ -95,7 +99,7 @@ export default function Navbar() {
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-2">
               <Link
                 href="/login"
                 className="px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white rounded-md hover:bg-slate-800 transition-colors"
@@ -110,8 +114,57 @@ export default function Navbar() {
               </Link>
             </div>
           )}
+
+          {/* Mobile Menu Hamburger */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-1.5 rounded-lg border border-slate-800 text-slate-400 hover:text-white"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-slate-800 bg-slate-900 px-4 pt-2 pb-4 space-y-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium ${
+                  active ? 'bg-indigo-600/20 text-indigo-300' : 'text-slate-400 hover:bg-slate-800'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+          {!currentUser && (
+            <div className="pt-2 border-t border-slate-800 flex gap-2">
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex-1 text-center py-2 text-xs rounded-lg border border-slate-800 text-slate-300"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex-1 text-center py-2 text-xs rounded-lg bg-indigo-600 text-white font-medium"
+              >
+                Register
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
     </header>
   );
 }

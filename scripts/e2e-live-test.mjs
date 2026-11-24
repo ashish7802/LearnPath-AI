@@ -26,6 +26,13 @@ async function runLiveTests() {
     if (!html.includes('LearnPath')) throw new Error('Missing branding in HTML');
   });
 
+  // 1b. Health Check API
+  await check('GET /api/health: Returns 200 OK and service metadata', async () => {
+    const res = await fetch(`${baseUrl}/api/health`);
+    const data = await res.json();
+    if (!data.service || !data.status) throw new Error('Invalid health payload');
+  });
+
   // 2. Curriculum API
   await check('GET /api/curriculum: Returns 15 curriculum topics', async () => {
     const res = await fetch(`${baseUrl}/api/curriculum?career=software-engineer`);

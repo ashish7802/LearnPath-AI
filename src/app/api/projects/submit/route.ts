@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifySessionToken } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { getProjects } from '@/lib/curriculum';
+import { projectSubmitSchema } from '@/lib/validations';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,11 +14,16 @@ export async function POST(req: NextRequest) {
     const session = await verifySessionToken(token);
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { projectId, repoUrl, demoUrl, reflection } = await req.json();
+    const body = await req.json().catch(() => null);
+    if (!body) return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
 
-    if (!projectId || !repoUrl || !reflection) {
-      return NextResponse.json({ error: 'Project ID, GitHub repository URL, and reflection are required' }, { status: 400 });
+    const validation = projectSubmitSchema.safeParse(body);
+    if (!validation.success) {
+      const errorMsg = validation.error.errors.map((e) => e.message).join(', ');
+      return NextResponse.json({ error: errorMsg }, { status: 400 });
     }
+
+    const { projectId, repoUrl, demoUrl, reflection } = validation.data;
 
     const projects = getProjects();
     const proj = projects.find((p) => p.id === projectId);

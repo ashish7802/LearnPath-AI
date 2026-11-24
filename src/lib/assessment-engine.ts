@@ -1,7 +1,7 @@
 import { Question, CodingChallenge, CodingTestCase } from './curriculum';
 
 export interface QuestionSubmission {
-  questionId: string;
+  questionId?: string;
   order: number;
   userAnswer: string;
 }

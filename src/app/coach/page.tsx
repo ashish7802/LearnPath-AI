@@ -14,6 +14,8 @@ import {
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+  source?: 'live_model' | 'curriculum_grounded_fallback';
+  model?: string;
 }
 
 export default function CoachPage() {
@@ -54,7 +56,9 @@ How can I help you today?`
       const data = await res.json();
       const botMsg: Message = {
         role: 'assistant',
-        content: data.reply || 'Let me help you understand that concept step by step.'
+        content: data.reply || 'Let me help you understand that concept step by step.',
+        source: data.source,
+        model: data.model
       };
       setMessages((prev) => [...prev, botMsg]);
     } catch {
@@ -135,6 +139,14 @@ How can I help you today?`
               }`}
             >
               <div className="whitespace-pre-wrap">{m.content}</div>
+              {m.source && (
+                <div className="pt-2 mt-2 border-t border-slate-800/60 flex items-center justify-between text-[10px] text-slate-500 font-mono">
+                  <span>
+                    {m.source === 'live_model' ? '⚡ Live AI Reasoning' : '📘 Curriculum Mentor Engine'}
+                  </span>
+                  <span>{m.model}</span>
+                </div>
+              )}
             </div>
           </div>
         ))}

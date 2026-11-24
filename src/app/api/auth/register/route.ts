@@ -1,28 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { hashPassword, createSessionToken } from '@/lib/auth';
+import { hashPassword, createSessionToken, getSessionCookieOptions } from '@/lib/auth';
+import { registerSchema } from '@/lib/validations';
+import { checkRateLimit } from '@/lib/rate-limit';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, name } = await req.json();
-
-    if (!email || !password || !name) {
-      return NextResponse.json({ error: 'Name, email, and password are required' }, { status: 400 });
+    const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
+    const rateCheck = checkRateLimit(`register_${ip}`, 5, 60);
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        { error: `Too many registration attempts. Please retry in ${rateCheck.resetInSeconds} seconds.` },
+        { status: 429 }
+      );
     }
 
-    if (password.length < 6) {
-      return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 });
+    const body = await req.json().catch(() => null);
+    if (!body) {
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
     }
 
-    const existing = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
+    const validation = registerSchema.safeParse(body);
+    if (!validation.success) {
+      const errorMsg = validation.error.errors.map((e) => e.message).join(', ');
+      return NextResponse.json({ error: errorMsg }, { status: 400 });
+    }
+
+    const { email, password, name } = validation.data;
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (existing) {
-      return NextResponse.json({ error: 'Email already registered' }, { status: 400 });
+      return NextResponse.json({ error: 'An account with this email already exists' }, { status: 409 });
     }
 
     const passwordHash = await hashPassword(password);
     const user = await prisma.user.create({
       data: {
-        email: email.toLowerCase().trim(),
+        email: normalizedEmail,
         name: name.trim(),
         passwordHash,
         profile: {
@@ -65,14 +82,7 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    response.cookies.set('lp_session', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 7 * 24 * 60 * 60
-    });
-
+    response.cookies.set('lp_session', token, getSessionCookieOptions());
     return response;
   } catch (error) {
     console.error('Registration error:', error);

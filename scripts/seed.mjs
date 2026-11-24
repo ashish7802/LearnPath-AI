@@ -132,6 +132,11 @@ async function main() {
       }
     });
 
+    // Clean existing resources, assessment, coding challenge for this topic to ensure idempotent seeding
+    await prisma.topicResource.deleteMany({ where: { topicId: t.id } });
+    await prisma.codingChallenge.deleteMany({ where: { topicId: t.id } });
+    await prisma.assessment.deleteMany({ where: { topicId: t.id } });
+
     // Resources
     for (const res of t.resources) {
       await prisma.topicResource.create({

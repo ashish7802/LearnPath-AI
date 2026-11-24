@@ -4,6 +4,9 @@ import prisma from '@/lib/prisma';
 import { getTopicById } from '@/lib/curriculum';
 import { evaluateAssessment } from '@/lib/assessment-engine';
 import { calculateNextReview } from '@/lib/scheduler';
+import { assessmentSubmitSchema } from '@/lib/validations';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,7 +16,16 @@ export async function POST(req: NextRequest) {
     const session = await verifySessionToken(token);
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { topicId, answers } = await req.json();
+    const body = await req.json().catch(() => null);
+    if (!body) return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+
+    const validation = assessmentSubmitSchema.safeParse(body);
+    if (!validation.success) {
+      const errorMsg = validation.error.errors.map((e) => e.message).join(', ');
+      return NextResponse.json({ error: errorMsg }, { status: 400 });
+    }
+
+    const { topicId, answers } = validation.data;
     const topic = getTopicById(topicId);
     if (!topic || !topic.assessment) {
       return NextResponse.json({ error: 'Topic or assessment not found' }, { status: 404 });
