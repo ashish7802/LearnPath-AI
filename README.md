@@ -1,7 +1,7 @@
 # LearnPath AI — Zero-to-Engineer Skill Mastery Platform
 
 LearnPath AI is an open-source, personalized, skill-based engineering learning platform designed to take beginners from true zero to demonstrable, portfolio-backed engineering capability.
-
+ 
 ---
 
 ## 🚀 Key Features
