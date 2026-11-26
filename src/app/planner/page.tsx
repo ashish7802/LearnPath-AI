@@ -34,10 +34,13 @@ interface RevisionItem {
 
 interface PlannerResponse {
   authenticated?: boolean;
+  dailyStudyMinutes?: number;
   schedule?: {
     date: string;
     dayOfWeek: string;
     totalAllocatedMins: number;
+    recoveryMode?: boolean;
+    recoveryNote?: string | null;
     blocks: StudyBlock[];
   };
   dueRevisionsCount?: number;
@@ -55,11 +58,14 @@ export default function PlannerPage() {
   const [planner, setPlanner] = useState<PlannerResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [rescheduling, setRescheduling] = useState(false);
+  const [recoveryMode, setRecoveryMode] = useState(false);
+  const [savingBudget, setSavingBudget] = useState(false);
   const [message, setMessage] = useState('');
   const [reviewingTopicId, setReviewingTopicId] = useState<string | null>(null);
 
-  const loadPlanner = () => {
-    fetch('/api/planner')
+  const loadPlanner = (useRecovery = recoveryMode) => {
+    const query = useRecovery ? '?missedDays=2' : '';
+    fetch(`/api/planner${query}`)
       .then((res) => res.json())
       .then((data) => setPlanner(data))
       .catch((err) => console.error(err))
@@ -67,16 +73,47 @@ export default function PlannerPage() {
   };
 
   useEffect(() => {
-    loadPlanner();
+    loadPlanner(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleRecalculate = () => {
     setRescheduling(true);
     setTimeout(() => {
-      loadPlanner();
+      loadPlanner(recoveryMode);
       setRescheduling(false);
       setMessage('Schedule redistributed across your available study days without streak penalties.');
     }, 350);
+  };
+
+  const handleToggleRecovery = () => {
+    const next = !recoveryMode;
+    setRecoveryMode(next);
+    loadPlanner(next);
+    setMessage(
+      next
+        ? 'Recovery plan activated: today’s workload is trimmed with zero streak penalties.'
+        : 'Restored standard daily study plan.'
+    );
+  };
+
+  const handleChangeBudget = async (mins: number) => {
+    setSavingBudget(true);
+    try {
+      const res = await fetch('/api/planner', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dailyStudyMinutes: mins }),
+      });
+      if (res.ok) {
+        setMessage(`Daily study target updated to ${mins} minutes.`);
+        loadPlanner(recoveryMode);
+      } else {
+        setMessage('Sign in to save your updated daily study target.');
+      }
+    } finally {
+      setSavingBudget(false);
+    }
   };
 
   const handleQuickReview = async (topicId: string, quality: number) => {
@@ -127,16 +164,52 @@ export default function PlannerPage() {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={handleRecalculate}
-          disabled={rescheduling}
-          className="px-4 py-2 rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs font-medium flex items-center gap-2 transition-colors disabled:opacity-50 whitespace-nowrap shrink-0 self-start sm:self-auto"
-        >
-          <RotateCcw className={`w-3.5 h-3.5 text-blue-400 ${rescheduling ? 'animate-spin' : ''}`} />
-          <span>Recalculate Plan</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2 shrink-0 self-start sm:self-auto">
+          <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-lg p-1 text-xs">
+            {[20, 45, 60, 90].map((mins) => (
+              <button
+                key={mins}
+                type="button"
+                disabled={savingBudget}
+                onClick={() => handleChangeBudget(mins)}
+                className={`px-2 py-1 rounded font-mono transition-colors ${
+                  (planner?.dailyStudyMinutes || 60) === mins
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                {mins}m
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={handleToggleRecovery}
+            className={`px-3.5 py-2 rounded-lg border text-xs font-medium transition-colors whitespace-nowrap ${
+              recoveryMode
+                ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
+                : 'border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200'
+            }`}
+          >
+            {recoveryMode ? 'Recovery Mode Active' : 'Missed a Day? Ease Back In'}
+          </button>
+          <button
+            type="button"
+            onClick={handleRecalculate}
+            disabled={rescheduling}
+            className="px-4 py-2 rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs font-medium flex items-center gap-2 transition-colors disabled:opacity-50 whitespace-nowrap"
+          >
+            <RotateCcw className={`w-3.5 h-3.5 text-blue-400 ${rescheduling ? 'animate-spin' : ''}`} />
+            <span>Recalculate Plan</span>
+          </button>
+        </div>
       </div>
+
+      {schedule?.recoveryNote && (
+        <div className="p-3.5 rounded-lg bg-blue-500/10 border border-blue-500/25 text-blue-200 text-xs">
+          {schedule.recoveryNote}
+        </div>
+      )}
 
       {message && (
         <div className="p-3.5 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 text-xs flex items-center justify-between gap-3">

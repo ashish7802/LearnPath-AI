@@ -56,6 +56,8 @@ export interface DailySchedule {
   dayOfWeek: string;
   totalAllocatedMins: number;
   isAvailableDay: boolean;
+  recoveryMode: boolean;
+  recoveryNote: string | null;
   blocks: StudyBlock[];
 }
 
@@ -67,18 +69,20 @@ export function generateDailyPlan(params: {
   activeProject?: { id: string; title: string };
   missedDaysCount?: number;
 }): DailySchedule {
-  const { dailyMinutes, availableDays, dueRevisionTopics, nextEligibleTopic, activeProject } = params;
+  const { dailyMinutes, availableDays, dueRevisionTopics, nextEligibleTopic, activeProject, missedDaysCount = 0 } = params;
 
   const today = new Date();
   const dayNames = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
   const currentDay = dayNames[today.getDay()];
   const isAvailableDay = availableDays.includes(currentDay);
+  const recoveryMode = missedDaysCount > 0;
+  const effectiveBudget = recoveryMode ? Math.max(20, Math.round(dailyMinutes * 0.65)) : dailyMinutes;
 
   const blocks: StudyBlock[] = [];
-  let remainingMins = isAvailableDay ? dailyMinutes : 0;
+  let remainingMins = isAvailableDay ? effectiveBudget : 0;
 
-  // 1. Spaced Repetition Reviews First (Max 25% of daily budget)
-  const maxRevisionMins = Math.round(remainingMins * 0.3);
+  // 1. Spaced Repetition Reviews First (Cap to 1 card in recovery mode to prevent backlog overwhelm)
+  const maxRevisionMins = recoveryMode ? 15 : Math.round(remainingMins * 0.3);
   let revisionUsed = 0;
 
   for (const rev of dueRevisionTopics) {
@@ -98,8 +102,8 @@ export function generateDailyPlan(params: {
   }
 
   // 2. Core New Topic Lesson & Practice
-  if (nextEligibleTopic && remainingMins >= 20) {
-    const lessonTime = Math.min(nextEligibleTopic.estimatedLessonMins || 25, Math.round(remainingMins * 0.45));
+  if (nextEligibleTopic && remainingMins >= 15) {
+    const lessonTime = Math.min(nextEligibleTopic.estimatedLessonMins || 25, Math.round(remainingMins * 0.5));
     blocks.push({
       id: `lesson-${nextEligibleTopic.id}`,
       type: 'lesson',
@@ -142,8 +146,12 @@ export function generateDailyPlan(params: {
   return {
     date: today.toISOString().split('T')[0],
     dayOfWeek: currentDay.toUpperCase(),
-    totalAllocatedMins: dailyMinutes - remainingMins,
+    totalAllocatedMins: effectiveBudget - remainingMins,
     isAvailableDay,
+    recoveryMode,
+    recoveryNote: recoveryMode
+      ? `Welcome back! Zero streak penalties—we trimmed today's plan to ${effectiveBudget - remainingMins} mins and capped overdue revisions so you can restart smoothly.`
+      : null,
     blocks
   };
 }

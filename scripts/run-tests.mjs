@@ -24,9 +24,17 @@ function runTest(name, fn) {
   }
 }
 
-// 1. Curriculum Integrity
-runTest('Curriculum Loader: All 15 curriculum topics exist and have valid structure', () => {
-  const files = ['foundations.json', 'software-engineering.json', 'machine-learning.json', 'ai-engineering.json'];
+// 1. Curriculum Integrity (All 7 JSON files, 27 topics)
+runTest('Curriculum Loader: All 27 curriculum topics across 7 files exist and have valid structure', () => {
+  const files = [
+    'foundations.json',
+    'software-engineering.json',
+    'machine-learning.json',
+    'ai-engineering.json',
+    'web-and-mobile.json',
+    'data-cyber-cloud.json',
+    'languages-hub.json',
+  ];
   let total = 0;
   for (const f of files) {
     const list = JSON.parse(fs.readFileSync(path.join(curriculumDir, f), 'utf8'));
@@ -39,7 +47,7 @@ runTest('Curriculum Loader: All 15 curriculum topics exist and have valid struct
       assert.ok(t.resources.length > 0, 'Topic has resources');
     }
   }
-  assert.equal(total, 15, 'Total 15 topics across all 4 files');
+  assert.equal(total, 27, 'Total 27 topics across all 7 files');
 });
 
 // 2. Prerequisite locking simulation
@@ -158,6 +166,27 @@ runTest('Adaptive Study Planner: Allocates daily minutes across revision, lesson
   assert.ok(p60.length === 3, 'Creates revision, lesson and practice blocks');
   const sumMins = p60.reduce((acc, b) => acc + b.mins, 0);
   assert.equal(sumMins, 60, 'Total study time matches 60m budget');
+});
+
+// 6. Concept Visualizations & Non-Punitive Recovery Check
+runTest('Concept Visualizations: Covers core CS, DSA, SQL, ML, and AI Agent concepts', () => {
+  const vizFile = fs.readFileSync(path.resolve(__dirname, '../src/lib/concept-visualizations.ts'), 'utf8');
+  const expectedIds = [
+    'binary-search',
+    'cpu-ram-cycle',
+    'recursion-call-stack',
+    'sql-joins',
+    'rag-pipeline',
+    'arrays-linked-lists',
+    'sorting-algorithms',
+    'trees-and-graphs',
+    'neural-networks',
+    'embeddings-attention',
+    'ai-agents',
+  ];
+  for (const id of expectedIds) {
+    assert.ok(vizFile.includes(`id: '${id}'`), `Missing visualization spec: ${id}`);
+  }
 });
 
 console.log(`\n=======================================`);

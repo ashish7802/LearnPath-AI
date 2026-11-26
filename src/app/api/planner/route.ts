@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
     }
 
     const requestedCareer = req.nextUrl.searchParams.get('career');
+    const missedDaysCount = Math.max(0, Math.min(14, Number(req.nextUrl.searchParams.get('missedDays') || 0)));
 
     // If unauthenticated, return a clear non-mutating starter plan for absolute beginners
     if (!session) {
@@ -39,6 +40,7 @@ export async function GET(req: NextRequest) {
         activeProject: careerProject
           ? { id: careerProject.id, title: careerProject.title }
           : undefined,
+        missedDaysCount,
       });
 
       return NextResponse.json({
@@ -140,11 +142,14 @@ export async function GET(req: NextRequest) {
       activeProject: activeProject
         ? { id: activeProject.id, title: activeProject.title }
         : undefined,
+      missedDaysCount,
     });
 
     return NextResponse.json({
       success: true,
       authenticated: true,
+      dailyStudyMinutes: dailyMins,
+      availableDays,
       schedule,
       dueRevisionsCount: dueRevisions.length,
       revisionQueue,
@@ -153,6 +158,50 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error('Planner API error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const token = req.cookies.get('lp_session')?.value;
+    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const session = await verifySessionToken(token);
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const body = await req.json().catch(() => null);
+    const dailyMinutes = Number(body?.dailyStudyMinutes);
+    if (Number.isNaN(dailyMinutes) || dailyMinutes < 15 || dailyMinutes > 240) {
+      return NextResponse.json({ error: 'dailyStudyMinutes must be between 15 and 240' }, { status: 400 });
+    }
+
+    const availableDays = Array.isArray(body?.availableDays)
+      ? body.availableDays.join(',')
+      : typeof body?.availableDays === 'string' && body.availableDays.trim().length > 0
+        ? body.availableDays.trim()
+        : undefined;
+
+    const profile = await prisma.userProfile.upsert({
+      where: { userId: session.id },
+      update: {
+        dailyStudyMinutes: Math.round(dailyMinutes),
+        ...(availableDays ? { availableDays } : {}),
+      },
+      create: {
+        userId: session.id,
+        dailyStudyMinutes: Math.round(dailyMinutes),
+        availableDays: availableDays || 'mon,tue,wed,thu,fri,sat,sun',
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      dailyStudyMinutes: profile.dailyStudyMinutes,
+      availableDays: profile.availableDays.split(','),
+    });
+  } catch (error) {
+    console.error('Planner PATCH error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

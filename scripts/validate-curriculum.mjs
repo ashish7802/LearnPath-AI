@@ -12,7 +12,10 @@ const files = [
   'foundations.json',
   'software-engineering.json',
   'machine-learning.json',
-  'ai-engineering.json'
+  'ai-engineering.json',
+  'web-and-mobile.json',
+  'data-cyber-cloud.json',
+  'languages-hub.json',
 ];
 
 const allTopics = new Map();

@@ -84,17 +84,18 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => null);
-    if (!body || typeof body.goalText !== 'string') {
+    const rawGoal = body?.goalText ?? body?.naturalLanguageGoal;
+    if (!body || typeof rawGoal !== 'string' || rawGoal.trim().length === 0) {
       return NextResponse.json({ error: 'Please provide a goalText string.' }, { status: 400 });
     }
 
-    const parsedGoal = parseNaturalLanguageGoal(body.goalText);
+    const parsedGoal = parseNaturalLanguageGoal(rawGoal);
     const recommendations = buildExplainableRecommendations({
       careerGoal: parsedGoal.careerGoal,
       dailyStudyMinutes: parsedGoal.dailyStudyMinutes,
       topicProgress: [],
       dueRevisions: [],
-      userQuery: body.goalText,
+      userQuery: rawGoal,
     });
 
     return NextResponse.json({

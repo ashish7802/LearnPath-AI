@@ -92,4 +92,5 @@ export const aiCoachSchema = z.object({
   userQuery: z.string().trim().min(1, 'Query cannot be empty').max(2000, 'Query exceeds 2,000 character limit'),
   language: z.enum(['english', 'hindi', 'hinglish']).optional().default('english'),
   hintLevel: z.number().int().min(1).max(3).optional(),
+  userCodeAttempt: z.string().max(10000, 'Code snippet exceeds 10,000 character limit').optional(),
 });

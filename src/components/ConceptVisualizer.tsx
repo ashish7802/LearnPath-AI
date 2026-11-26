@@ -34,6 +34,7 @@ export default function ConceptVisualizer({
   const [stepIndex, setStepIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [textMode, setTextMode] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
 
   const spec: ConceptVisualizationSpec =
@@ -55,6 +56,7 @@ export default function ConceptVisualizer({
       const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
       if (mq.matches) {
         setIsPlaying(false);
+        setReducedMotion(true);
       }
     }
   }, []);
@@ -85,7 +87,17 @@ export default function ConceptVisualizer({
   return (
     <section
       aria-label={`Interactive Concept Visualization: ${spec.title}`}
-      className="rounded-xl border border-slate-800 bg-[#111827] overflow-hidden"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'ArrowRight') {
+          setIsPlaying(false);
+          setStepIndex((prev) => Math.min(spec.steps.length - 1, prev + 1));
+        } else if (e.key === 'ArrowLeft') {
+          setIsPlaying(false);
+          setStepIndex((prev) => Math.max(0, prev - 1));
+        }
+      }}
+      className="rounded-xl border border-slate-800 bg-[#111827] overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
     >
       {/* Header & Concept Selector */}
       <div className="p-5 border-b border-slate-800 flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-[#0B1120]/50">

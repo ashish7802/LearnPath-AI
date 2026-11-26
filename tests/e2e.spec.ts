@@ -9,7 +9,7 @@ test.describe('LearnPath AI — Core End-to-End User Journeys', () => {
     await expect(page.getByText('ML Engineer').first()).toBeVisible();
     await expect(page.getByText('AI Engineer').first()).toBeVisible();
     await expect(page.getByRole('link', { name: /Build My Personalized Roadmap/i })).toBeVisible();
-    await expect(page.getByText('Realistic Sample Preview')).toBeVisible();
+    await expect(page.getByText(/Interactive Preview · Realistic Sample Data/i)).toBeVisible();
   });
 
   test('2. Registration page validates inputs and directs to onboarding', async ({ page }) => {
@@ -73,7 +73,7 @@ test.describe('LearnPath AI — Core End-to-End User Journeys', () => {
   test('7. Topic Learning Page renders interactive concept visualizer, micro-lessons, and resources', async ({ page }) => {
     await page.goto('/topics/comp-101');
     await expect(page.locator('h1')).toContainText('How Computers Actually Work');
-    await expect(page.getByText('Interactive Visual Concept Simulation')).toBeVisible();
+    await expect(page.getByText(/Interactive Step-by-Step Concept Simulation/i)).toBeVisible();
     await expect(page.getByText('Verified Free Study Resources')).toBeVisible();
     await expect(page.getByRole('button', { name: /Take Verification Assessment|Retake Assessment/i })).toBeVisible();
   });

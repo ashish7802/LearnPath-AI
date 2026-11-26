@@ -26,6 +26,7 @@ export interface CoachRequest {
   userQuery: string;
   conversationHistory?: CoachMessage[];
   hintLevel?: number; // 1, 2, 3
+  userCodeAttempt?: string;
   learnerContext?: CoachLearnerContext;
 }
 
@@ -78,6 +79,63 @@ PEDAGOGICAL & SAFETY RULES:
 5. Keep answers encouraging, structured with bullet points, and concise (under 250 words per response).`;
 }
 
+function diagnoseCodeAttempt(code: string, lang: 'english' | 'hindi' | 'hinglish'): string {
+  const findings: string[] = [];
+  const hasDef = /\bdef\s+\w+\s*\(/.test(code);
+  const hasReturn = /\breturn\b/.test(code);
+  const hasPrint = /\bprint\s*\(/.test(code);
+  const hasAssignmentInIf = /\bif\b[^=\n]*[^=!<>]=[^=][^\n]*/.test(code);
+  const missingColon = /^\s*(def|if|elif|else|for|while)\b[^:\n]+$/m.test(code);
+  const openParens = (code.match(/\(/g) || []).length;
+  const closeParens = (code.match(/\)/g) || []).length;
+
+  if (hasDef && hasPrint && !hasReturn) {
+    findings.push(
+      lang === 'hinglish'
+        ? '**`print()` vs `return` mismatch**: Aapke function mein `print()` hai par `return` nahi hai. Automated tests function ki return value check karte hain—`return` use karein.'
+        : '**`print()` instead of `return`**: Your function prints output to the console instead of returning it. Automated tests check the `return` value.'
+    );
+  }
+  if (hasAssignmentInIf) {
+    findings.push(
+      lang === 'hinglish'
+        ? '**`=` vs `==` in `if` condition**: Condition compare karne ke liye `==` lagayein (`=` sirf value assign karne ke liye hota hai).'
+        : '**Assignment `=` inside `if`**: Use `==` for comparison instead of `=`, which assigns a value.'
+    );
+  }
+  if (missingColon) {
+    findings.push(
+      lang === 'hinglish'
+        ? '**Missing colon (`:`)**: Python mein `def`, `if`, `for`, aur `while` line ke end mein `:` lagana zaroori hota hai.'
+        : '**Missing colon (`:`)**: In Python, `def`, `if`, `elif`, `else`, `for`, and `while` headers must end with `:`.'
+    );
+  }
+  if (openParens !== closeParens) {
+    findings.push(
+      lang === 'hinglish'
+        ? `**Unbalanced parentheses**: Aapke code mein ${openParens} opening \`(\` aur ${closeParens} closing \`)\` hain.`
+        : `**Unbalanced parentheses**: Found ${openParens} opening \`(\` vs ${closeParens} closing \`)\`.`
+    );
+  }
+
+  if (findings.length === 0) {
+    findings.push(
+      lang === 'hinglish'
+        ? 'Syntax clean lag raha hai! Ab edge cases check karein: kya aapka function `0`, empty string `""`, ya negative numbers par sahi `return` value deta hai?'
+        : 'Your syntax looks clean! Next, trace edge cases: what does your function `return` when given `0`, an empty string `""`, or an empty list `[]`?'
+    );
+  }
+
+  const header =
+    lang === 'hinglish'
+      ? '### Aapke Code Ka Line-by-Line Diagnosis'
+      : lang === 'hindi'
+        ? '### आपके कोड की जाँच (Code Diagnosis)'
+        : '### Line-by-Line Code Diagnosis';
+
+  return `${header}\n\n${findings.map((f, idx) => `${idx + 1}. ${f}`).join('\n')}\n\n**Next Hint**: Fix one item above and re-run the sandbox test cases.`;
+}
+
 // Deterministic curriculum-grounded coach responses when AI API key is not configured
 export function getDeterministicCoachResponse(req: CoachRequest): string {
   const query = req.userQuery.toLowerCase();
@@ -85,6 +143,10 @@ export function getDeterministicCoachResponse(req: CoachRequest): string {
   const ctx = req.learnerContext || {};
   const currentTopic = req.topicTitle || ctx.nextRecommendedTopicTitle || 'Programming Fundamentals';
   const careerLabel = (ctx.careerGoal || 'software-engineer').replace(/-/g, ' ');
+
+  if (req.userCodeAttempt && req.userCodeAttempt.trim().length > 0) {
+    return diagnoseCodeAttempt(req.userCodeAttempt.trim(), lang);
+  }
 
   // 1. Hindi (Devanagari) responses
   if (lang === 'hindi' || query.includes('simple hindi') || query.includes('हिंदी')) {

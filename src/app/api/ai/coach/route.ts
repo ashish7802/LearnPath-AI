@@ -9,6 +9,7 @@ import {
   CoachRequest,
   CoachLearnerContext,
 } from '@/lib/ai-coach';
+import { buildExplainableRecommendations } from '@/lib/adaptive-engine';
 import { aiCoachSchema } from '@/lib/validations';
 import { checkRateLimit } from '@/lib/rate-limit';
 
@@ -94,7 +95,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: errorMsg }, { status: 400 });
     }
 
-    const { topicId, userQuery, language, hintLevel } = validation.data;
+    const { topicId, userQuery, language, hintLevel, userCodeAttempt } = validation.data;
     const finalLanguage = language || preferredLanguage;
 
     const topic = topicId ? getTopicById(topicId) : undefined;
@@ -105,12 +106,13 @@ export async function POST(req: NextRequest) {
       mathComfort,
       userQuery,
       hintLevel,
+      userCodeAttempt,
       learnerContext,
     };
 
     let replyText = '';
     let responseSource: 'live_model' | 'curriculum_grounded_fallback' = 'curriculum_grounded_fallback';
-    const configuredModel = 'gemini-4-hydrogen';
+    const configuredModel = (process.env.AI_COACH_MODEL || 'gemini-2.5-flash').trim();
     const apiKey = process.env.GEMINI_API_KEY || process.env.AI_COACH_API_KEY;
 
     if (apiKey && apiKey.trim() !== '') {
@@ -155,7 +157,7 @@ Common Pitfalls: ${topic.commonMistakes.join(', ')}`
 
         const userPrompt = `${groundingSection ? groundingSection + '\n\n' : ''}${
           conversationContext ? `RECENT CONVERSATION:\n${conversationContext}\n\n` : ''
-        }Learner Query: ${userQuery}`;
+        }${userCodeAttempt ? `LEARNER CODE ATTEMPT:\n\`\`\`\n${userCodeAttempt}\n\`\`\`\n\n` : ''}Learner Query: ${userQuery}`;
 
         const response = await ai.models.generateContent({
           model: configuredModel,
@@ -202,6 +204,26 @@ Common Pitfalls: ${topic.commonMistakes.join(', ')}`
       });
     }
 
+    const qLower = userQuery.toLowerCase();
+    const wantsRecommendations =
+      qLower.includes('next') ||
+      qLower.includes('recommend') ||
+      qLower.includes('shorter') ||
+      qLower.includes('study plan') ||
+      qLower.includes('aage kya');
+
+    const chatRecommendations = wantsRecommendations
+      ? buildExplainableRecommendations({
+          careerGoal: learnerContext.careerGoal || 'software-engineer',
+          dailyStudyMinutes: qLower.includes('shorter')
+            ? Math.min(25, learnerContext.dailyStudyMinutes || 60)
+            : learnerContext.dailyStudyMinutes || 60,
+          topicProgress: [],
+          dueRevisions: [],
+          userQuery,
+        }).slice(0, 2)
+      : [];
+
     return NextResponse.json({
       success: true,
       reply: replyText,
@@ -213,6 +235,7 @@ Common Pitfalls: ${topic.commonMistakes.join(', ')}`
           ? 'AI Explanation · Grounded in Curriculum'
           : 'Verified Curriculum Tutor Engine',
       learnerContext,
+      recommendations: chatRecommendations,
     });
   } catch (error) {
     console.error('AI Coach API error:', error);

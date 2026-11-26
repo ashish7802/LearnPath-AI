@@ -68,15 +68,17 @@ export default function OnboardingPage() {
       const res = await fetch('/api/recommendations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ naturalLanguageGoal: text }),
+        body: JSON.stringify({ goalText: text }),
       });
       const data = await res.json();
-      if (res.ok && data.parsed) {
-        setCareerGoal(data.parsed.careerGoal);
-        setExperienceLevel(data.parsed.experienceLevel);
-        setDailyStudyMinutes(data.parsed.dailyStudyMinutes);
-        setPreferredLanguage(data.parsed.preferredLanguage);
+      if (res.ok && data.parsedGoal) {
+        setCareerGoal(data.parsedGoal.careerGoal);
+        setExperienceLevel(data.parsedGoal.experienceLevel);
+        setDailyStudyMinutes(data.parsedGoal.dailyStudyMinutes);
+        setPreferredLanguage(data.parsedGoal.preferredLanguage);
         setParsedPreview(data);
+      } else if (!res.ok) {
+        setError(data.error || 'Could not analyze goal text.');
       }
     } catch {
       // Non-blocking fallback
@@ -112,6 +114,27 @@ export default function OnboardingPage() {
     setError('');
     try {
       const score = diagnosticAnswer === 'B' ? 100 : diagnosticAnswer === '' ? 80 : 50;
+
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem(
+            'lp_guest_profile',
+            JSON.stringify({
+              careerGoal,
+              experienceLevel,
+              preferredLanguage,
+              dailyStudyMinutes,
+              availableDays,
+              deviceType,
+              targetMilestone,
+              diagnosticScore: score,
+              savedAt: new Date().toISOString(),
+            })
+          );
+        } catch {
+          // Ignore storage quota errors
+        }
+      }
 
       const res = await fetch('/api/onboarding', {
         method: 'POST',

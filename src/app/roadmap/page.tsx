@@ -23,6 +23,7 @@ function RoadmapContent() {
   const [selectedSubject, setSelectedSubject] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [curriculumData, setCurriculumData] = useState<any>(null);
+  const [guestPrefs, setGuestPrefs] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({});
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
@@ -30,6 +31,14 @@ function RoadmapContent() {
   useEffect(() => {
     const paramCareer = searchParams.get('career');
     if (paramCareer) setSelectedCareer(paramCareer);
+    if (typeof window !== 'undefined') {
+      try {
+        const raw = localStorage.getItem('lp_guest_profile');
+        if (raw) setGuestPrefs(JSON.parse(raw));
+      } catch {
+        // ignore
+      }
+    }
   }, [searchParams]);
 
   useEffect(() => {
@@ -155,6 +164,29 @@ function RoadmapContent() {
           </Link>
         </div>
       </div>
+
+      {/* Guest Personalized Goal Banner */}
+      {guestPrefs && !curriculumData?.authenticated && (
+        <div className="p-4 rounded-xl border border-blue-500/25 bg-blue-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="text-slate-200">
+            <strong className="text-blue-300">Your Onboarding Plan:</strong>{' '}
+            {guestPrefs.dailyStudyMinutes || 60} mins/day ·{' '}
+            <span className="capitalize">{guestPrefs.preferredLanguage || 'english'}</span> ·{' '}
+            {(guestPrefs.experienceLevel || 'absolute-zero').replace(/-/g, ' ')}
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <Link href="/onboarding" className="text-blue-300 hover:text-white underline">
+              Adjust Goals
+            </Link>
+            <Link
+              href="/register"
+              className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold"
+            >
+              Save Permanently
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Career Selector Buttons */}
       <div className="space-y-3">

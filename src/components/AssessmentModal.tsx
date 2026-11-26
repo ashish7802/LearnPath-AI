@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   X,
@@ -32,6 +32,14 @@ export default function AssessmentModal({
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [authError, setAuthError] = useState('');
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   const handleSelectOption = (order: number, val: string) => {
     setAnswers((prev) => ({ ...prev, [order]: val }));
