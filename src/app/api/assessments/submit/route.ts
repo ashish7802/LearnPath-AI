@@ -5,6 +5,7 @@ import { getTopicById } from '@/lib/curriculum';
 import { evaluateAssessment } from '@/lib/assessment-engine';
 import { calculateNextReview } from '@/lib/scheduler';
 import { assessmentSubmitSchema } from '@/lib/validations';
+import { buildAssessmentRemediation } from '@/lib/adaptive-engine';
 
 export const dynamic = 'force-dynamic';
 
@@ -142,14 +143,22 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    const remediation = buildAssessmentRemediation({
+      topicId,
+      score: evaluation.score,
+      passed: isPassed,
+      feedback: evaluation.feedback,
+    });
+
     return NextResponse.json({
       success: true,
       evaluation,
+      remediation,
       status: updatedProgress.status,
       mastered: isPassed,
       message: isPassed
-        ? '🎉 Congratulations! You have proven mastery and unlocked the next topic!'
-        : 'Assessment not passed yet. Review the weak concepts and retest.'
+        ? 'Congratulations! You have proven mastery and unlocked the next topic!'
+        : remediation.explanation
     });
   } catch (error) {
     console.error('Assessment submit error:', error);

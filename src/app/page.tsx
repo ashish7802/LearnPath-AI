@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { ArrowRight, CheckCircle2, BookOpen, Code2, GitBranch, Layers } from 'lucide-react';
+import { ArrowRight, BookOpen, Code2, GitBranch, Layers, Compass, Sparkles, ShieldCheck } from 'lucide-react';
 import { getAllCareers, getAllTopics, getProjects } from '@/lib/curriculum';
 import { LANGUAGE_GUIDES } from '@/lib/curriculum-layers';
+import HomeInteractivePreview from '@/components/HomeInteractivePreview';
 
 export default function HomePage() {
   const careers = getAllCareers();
@@ -21,48 +22,71 @@ export default function HomePage() {
     { step: '06', name: 'Micro-Lesson', desc: 'Meaning, purpose, analogy, runnable code, line-by-line guide & quick check.' },
   ];
 
+  const howItWorks = [
+    {
+      step: 'Step 1',
+      title: 'Describe Your Goal in Plain Language',
+      desc: 'Tell LearnPath your goal, available daily time, and starting point—or choose any of the 8 career pathways directly. No prior coding jargon required.',
+      icon: Compass,
+    },
+    {
+      step: 'Step 2',
+      title: 'Learn Step-by-Step with Interactive Visuals & AI Coach',
+      desc: 'Study bite-sized micro-lessons with interactive step-by-step concept animations and an optional English, Hindi, or Hinglish AI coach whenever you get stuck.',
+      icon: Sparkles,
+    },
+    {
+      step: 'Step 3',
+      title: 'Prove Mastery & Build Portfolio Projects',
+      desc: 'Pass deterministic 80%+ verification quizzes and real code sandbox assertions to unlock dependent skills, spaced repetition reviews, and portfolio milestones.',
+      icon: ShieldCheck,
+    },
+  ];
+
   return (
-    <div className="space-y-20 py-6">
-      {/* Hero Section: Single Dominant Focal Anchor */}
-      <section className="max-w-4xl space-y-6 pt-4">
-        <p className="text-sm font-medium text-blue-400">
-          Zero-to-Professional Computer Science &amp; Engineering Academy
+    <div className="space-y-16 py-6">
+      {/* Hero Section: Immediate 30-Second Product Clarity */}
+      <section className="max-w-4xl space-y-5 pt-2">
+        <p className="text-xs sm:text-sm font-semibold text-blue-400 tracking-wide">
+          100% Free &amp; Open Access · Zero-to-Engineer Personalized Learning Platform
         </p>
 
-        <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.1]">
-          Learn Programming &amp; Technology from Absolute Zero.
+        <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.08]">
+          From beginner to engineer. One skill at a time.
         </h1>
 
-        <p className="text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed">
-          One structured platform covering computer fundamentals, programming languages, web and mobile development,
-          data science, machine learning, AI engineering, cybersecurity, databases, networking, and cloud DevOps.
-          Every concept is taught step by step in plain language—with verifiable code sandboxes, skill trees, and real portfolio projects.
+        <p className="text-base sm:text-lg text-slate-200 max-w-3xl leading-relaxed">
+          Learn the right skills, practice with an AI coach, and build real projects. Get a personalized roadmap that adapts to your progress.
+        </p>
+
+        <p className="text-xs sm:text-sm text-slate-400 max-w-2xl leading-relaxed italic">
+          &ldquo;Bilkul zero se shuru karo. Apni skills seekho, practice karo aur real projects banao — ek personalized roadmap ke saath.&rdquo;
         </p>
 
         <div className="flex flex-wrap items-center gap-4 pt-2">
           <Link
-            href="/roadmap"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-colors"
+            href="/onboarding"
+            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-colors shadow-lg shadow-blue-600/20"
           >
-            <span>Explore Full Curriculum</span>
+            <span>Build My Personalized Roadmap</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
-            href="/practice"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-slate-700 hover:border-slate-600 bg-[#111827] hover:bg-slate-800 text-slate-100 text-sm font-semibold transition-colors"
+            href="/roadmap"
+            className="inline-flex items-center gap-2 px-5 py-3.5 rounded-lg border border-slate-700 hover:border-slate-600 bg-[#111827] hover:bg-slate-800 text-slate-100 text-sm font-semibold transition-colors"
           >
-            <span>Open Coding Practice</span>
+            <span>Explore Full Curriculum</span>
           </Link>
           <Link
-            href="/dashboard"
-            className="text-sm font-medium text-slate-400 hover:text-white transition-colors px-2 py-2"
+            href="/practice"
+            className="text-sm font-medium text-slate-300 hover:text-white transition-colors px-2 py-2"
           >
-            View Learner Dashboard
+            Open Coding Sandbox →
           </Link>
         </div>
 
         {/* Grounded Curriculum Quantitative Proof Row */}
-        <div className="pt-8 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-6">
+        <div className="pt-6 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-6">
           <div>
             <div className="font-display text-2xl font-bold text-white tabular-nums">{careers.length}</div>
             <div className="text-xs text-slate-400 mt-0.5">Technology Career Paths</div>
@@ -81,6 +105,42 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* 3-Step Visual Explanation: How Personalized Learning Works */}
+      <section className="space-y-4">
+        <div className="space-y-1">
+          <h2 className="font-display text-xl sm:text-2xl font-bold text-white">
+            How LearnPath Takes You From Zero to Demonstrable Engineering Skills
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-400">
+            Designed around verified mastery, explainable recommendations, and real code execution—not passive video watching.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {howItWorks.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.step}
+                className="rounded-xl border border-slate-800 bg-[#111827] p-5 space-y-2.5"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-semibold text-blue-400 uppercase tracking-wider">
+                    {item.step}
+                  </span>
+                  <Icon className="w-4 h-4 text-blue-400" />
+                </div>
+                <h3 className="text-base font-semibold text-white">{item.title}</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">{item.desc}</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Interactive Product Preview: Roadmap Generator, Animated Visualizer, AI Coach & Mastery */}
+      <HomeInteractivePreview />
 
       {/* Section 2: All 8 Career Pathways */}
       <section className="space-y-6">
@@ -135,7 +195,7 @@ export default function HomePage() {
           </h2>
           <p className="text-sm text-slate-400 leading-relaxed">
             LearnPath organizes every field into six transparent learning layers so you never hit an unexplained prerequisite.
-            An optional AI Helper is available if you want an analogy or debugging hint, while the structured curriculum, sandboxes, and mastery rules remain 100% deterministic.
+            An optional AI Coach is available whenever you want a simpler explanation, a real-world analogy, or a debugging hint, while the structured curriculum, sandboxes, and mastery rules remain 100% deterministic.
           </p>
         </div>
 

@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   Code2,
   Globe,
@@ -12,7 +13,9 @@ import {
   Shield,
   Cloud,
   ArrowRight,
-  CheckCircle2
+  CheckCircle2,
+  Wand2,
+  FastForward,
 } from 'lucide-react';
 
 const CAREER_OPTIONS = [
@@ -26,11 +29,22 @@ const CAREER_OPTIONS = [
   { id: 'cloud-devops-engineer', title: 'Cloud & DevOps', icon: Cloud, desc: 'Linux, Docker containers, CI/CD & cloud infra' }
 ];
 
+const SAMPLE_GOALS = [
+  'I am a complete beginner. I want to become a Python developer in six months. I can study one hour every day.',
+  'Main bilkul zero se AI aur LLM apps banana chahta hoon. Roz 45 minutes padh sakta hoon.',
+  'I know basic HTML and want to become a full-stack web developer with 90 minutes daily study.',
+];
+
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Natural-language goal input state
+  const [naturalGoal, setNaturalGoal] = useState('');
+  const [analyzingGoal, setAnalyzingGoal] = useState(false);
+  const [parsedPreview, setParsedPreview] = useState<any>(null);
 
   const [careerGoal, setCareerGoal] = useState('software-engineer');
   const [experienceLevel, setExperienceLevel] = useState('absolute-zero');
@@ -44,6 +58,44 @@ export default function OnboardingPage() {
   const [targetMilestone, setTargetMilestone] = useState('job-ready');
 
   const [diagnosticAnswer, setDiagnosticAnswer] = useState('');
+
+  const handleAnalyzeNaturalGoal = async (textToAnalyze?: string) => {
+    const text = (textToAnalyze ?? naturalGoal).trim();
+    if (!text) return;
+    setAnalyzingGoal(true);
+    setError('');
+    try {
+      const res = await fetch('/api/recommendations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ naturalLanguageGoal: text }),
+      });
+      const data = await res.json();
+      if (res.ok && data.parsed) {
+        setCareerGoal(data.parsed.careerGoal);
+        setExperienceLevel(data.parsed.experienceLevel);
+        setDailyStudyMinutes(data.parsed.dailyStudyMinutes);
+        setPreferredLanguage(data.parsed.preferredLanguage);
+        setParsedPreview(data);
+      }
+    } catch {
+      // Non-blocking fallback
+    } finally {
+      setAnalyzingGoal(false);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const goalParam = params.get('goal');
+      if (goalParam) {
+        setNaturalGoal(goalParam);
+        handleAnalyzeNaturalGoal(goalParam);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const toggleDay = (day: string) => {
     if (availableDays.includes(day)) {
@@ -98,13 +150,24 @@ export default function OnboardingPage() {
 
   return (
     <div className="max-w-3xl mx-auto py-8 space-y-8">
-      {/* Step Progress */}
+      {/* Step Progress & Skip Optional Steps Action */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between text-xs text-slate-400">
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
           <span className="font-mono uppercase tracking-wider text-blue-400 font-semibold">
-            Zero-Barrier Onboarding
+            Zero-Barrier Personalized Onboarding
           </span>
-          <span className="font-mono tabular-nums">Step {step} of 3</span>
+          <div className="flex items-center gap-4">
+            <span className="font-mono tabular-nums">Step {step} of 3</span>
+            <button
+              type="button"
+              onClick={handleFinish}
+              disabled={loading}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-300 hover:text-white underline disabled:opacity-50"
+            >
+              <FastForward className="w-3.5 h-3.5 text-blue-400" />
+              <span>Skip Optional Questions &amp; Generate Roadmap</span>
+            </button>
+          </div>
         </div>
         <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
           <div
@@ -112,6 +175,87 @@ export default function OnboardingPage() {
             style={{ width: `${(step / 3) * 100}%` }}
           />
         </div>
+      </div>
+
+      {/* Natural Language Goal Auto-Configurator */}
+      <div className="p-5 rounded-xl border border-blue-500/30 bg-[#111827] space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="space-y-0.5">
+            <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+              <Wand2 className="w-4 h-4 text-blue-400" />
+              <span>Describe Your Learning Goal in Plain Language (Optional)</span>
+            </h2>
+            <p className="text-xs text-slate-400">
+              Write your goal in English, Hindi, or Hinglish—LearnPath will automatically configure your career track, starting level, and daily study time.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-2.5">
+          <input
+            type="text"
+            aria-label="Describe your learning goal in plain language"
+            value={naturalGoal}
+            onChange={(e) => setNaturalGoal(e.target.value)}
+            placeholder="e.g. I am a complete beginner. I want to become a Python developer in six months. I can study one hour every day."
+            className="flex-1 bg-[#0B1120] border border-slate-800 rounded-lg px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+          />
+          <button
+            type="button"
+            disabled={analyzingGoal || !naturalGoal.trim()}
+            onClick={() => handleAnalyzeNaturalGoal()}
+            className="px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold whitespace-nowrap transition-colors disabled:opacity-50"
+          >
+            {analyzingGoal ? 'Analyzing Goal...' : 'Auto-Configure Plan'}
+          </button>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-[11px] text-slate-400">Try an example:</span>
+          {SAMPLE_GOALS.map((sample, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => {
+                setNaturalGoal(sample);
+                handleAnalyzeNaturalGoal(sample);
+              }}
+              className="px-2.5 py-1 rounded border border-slate-800 bg-[#0B1120] hover:border-slate-700 text-[11px] text-slate-300 text-left transition-colors"
+            >
+              &ldquo;{sample.slice(0, 56)}...&rdquo;
+            </button>
+          ))}
+        </div>
+
+        {parsedPreview?.parsed && (
+          <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs font-semibold text-emerald-400">
+                ✓ Personalized Roadmap Configured from Your Goal
+              </span>
+              <span className="font-mono text-[11px] text-slate-400 tabular-nums">
+                {parsedPreview.parsed.dailyStudyMinutes} min/day · {parsedPreview.parsed.targetMonths} month target
+              </span>
+            </div>
+            <p className="text-xs text-slate-200 leading-relaxed">
+              {parsedPreview.parsed.summaryExplanation}
+            </p>
+            {parsedPreview.recommendations?.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+                {parsedPreview.recommendations.map((rec: any) => (
+                  <div
+                    key={rec.id}
+                    className="p-2.5 rounded-lg border border-slate-800 bg-[#0B1120] space-y-1"
+                  >
+                    <div className="font-mono text-[10px] text-blue-400 uppercase">{rec.type}</div>
+                    <div className="text-xs font-semibold text-white">{rec.title}</div>
+                    <div className="text-[11px] text-slate-400 leading-snug">{rec.whySelected}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {error && (
@@ -206,7 +350,13 @@ export default function OnboardingPage() {
             </div>
           </div>
 
-          <div className="flex justify-end pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-4">
+            <Link
+              href={`/roadmap?career=${careerGoal}`}
+              className="text-xs font-medium text-slate-400 hover:text-white"
+            >
+              Preview {careerGoal.replace(/-/g, ' ')} roadmap first →
+            </Link>
             <button
               type="button"
               onClick={() => setStep(2)}
@@ -337,7 +487,7 @@ export default function OnboardingPage() {
         <div className="p-6 rounded-xl border border-slate-800 bg-[#111827] space-y-6">
           <div className="space-y-1">
             <h1 className="font-display text-xl font-bold text-slate-50">
-              5. Quick Baseline Check
+              5. Quick Baseline Check (Optional)
             </h1>
             <p className="text-xs text-slate-400">
               No pressure — selecting &quot;not sure yet&quot; simply starts you cleanly from Computer Fundamentals.

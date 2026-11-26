@@ -7,18 +7,19 @@ import {
   Award,
   BookOpen,
   Calendar,
-  CheckCircle2,
-  Clock,
   Flame,
   ShieldCheck,
   Trophy,
   AlertTriangle,
+  Sparkles,
+  Compass,
 } from 'lucide-react';
 
 export default function DashboardPage() {
   const [curriculum, setCurriculum] = useState<any>(null);
   const [planner, setPlanner] = useState<any>(null);
   const [summary, setSummary] = useState<any>(null);
+  const [recData, setRecData] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [demoSigningIn, setDemoSigningIn] = useState(false);
@@ -28,12 +29,14 @@ export default function DashboardPage() {
       fetch('/api/curriculum').then((r) => r.json()),
       fetch('/api/planner').then((r) => r.json()),
       fetch('/api/progress/summary').then((r) => r.json()),
+      fetch('/api/recommendations').then((r) => r.json()),
       fetch('/api/auth/me').then((r) => r.json()),
     ])
-      .then(([currData, planData, sumData, userData]) => {
+      .then(([currData, planData, sumData, recommendationsData, userData]) => {
         setCurriculum(currData);
         setPlanner(planData);
         setSummary(sumData);
+        setRecData(recommendationsData);
         setUser(userData?.user || null);
       })
       .catch((err) => console.error(err))
@@ -82,6 +85,7 @@ export default function DashboardPage() {
   const achievements: any[] = summary?.achievements || [];
   const unlockedBadges = achievements.filter((a) => a.unlocked).length;
   const subjectMastery: any[] = summary?.subjectMastery || [];
+  const explainableRecs: any[] = recData?.recommendations || [];
 
   return (
     <div className="space-y-10 py-4">
@@ -118,9 +122,13 @@ export default function DashboardPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="text-xs text-slate-400">
-              Active Track: <span className="text-blue-400 font-medium capitalize">{(user?.profile?.careerGoal || 'software-engineer').replace(/-/g, ' ')}</span>
+              Active Track:{' '}
+              <span className="text-blue-400 font-medium capitalize">
+                {(user?.profile?.careerGoal || 'software-engineer').replace(/-/g, ' ')}
+              </span>
               {' · '}
-              Daily Goal: <span className="tabular-nums text-slate-200">{user?.profile?.dailyStudyMinutes || 60} min</span>
+              Daily Goal:{' '}
+              <span className="tabular-nums text-slate-200">{user?.profile?.dailyStudyMinutes || 60} min</span>
             </div>
             <h1 className="font-display text-2xl sm:text-3xl font-bold text-white">
               {user ? `Welcome back, ${user.name}` : 'Learner Mastery Dashboard'}
@@ -133,6 +141,12 @@ export default function DashboardPage() {
               className="px-4 py-2 rounded-lg border border-slate-700 hover:border-slate-600 text-xs font-semibold text-slate-200 whitespace-nowrap"
             >
               Update Goals
+            </Link>
+            <Link
+              href="/coach"
+              className="px-4 py-2 rounded-lg border border-slate-700 hover:border-slate-600 text-xs font-semibold text-blue-400 whitespace-nowrap"
+            >
+              Ask AI Coach
             </Link>
             <Link
               href={nextTopic ? `/topics/${nextTopic.id}` : '/roadmap'}
@@ -177,7 +191,9 @@ export default function DashboardPage() {
           </div>
           <div className="font-display text-2xl font-bold text-white tabular-nums">
             {summary?.stats?.topicsMastered || 0}{' '}
-            <span className="text-xs font-normal text-slate-400">/ {summary?.stats?.totalTopics || topics.length}</span>
+            <span className="text-xs font-normal text-slate-400">
+              / {summary?.stats?.totalTopics || topics.length}
+            </span>
           </div>
           <p className="text-xs text-slate-400">Passed assessments at 80%+ score.</p>
         </div>
@@ -203,7 +219,7 @@ export default function DashboardPage() {
             <span className="text-xs font-normal text-slate-400">days</span>
           </div>
           <p className="text-xs text-slate-400">
-            {planner?.dueRevisionsCount || 0} spaced review(s) due today.
+            {planner?.dueRevisionsCount || 0} spaced review(s) due today · Never resets mastery.
           </p>
         </div>
 
@@ -221,6 +237,57 @@ export default function DashboardPage() {
           </p>
         </div>
       </section>
+
+      {/* Explainable Adaptive Recommendations Section */}
+      {explainableRecs.length > 0 && (
+        <section className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+            <div className="space-y-1">
+              <h2 className="font-display text-lg font-bold text-white flex items-center gap-2">
+                <Compass className="w-4 h-4 text-blue-400" />
+                <span>Explainable Personalized Recommendations</span>
+              </h2>
+              <p className="text-xs text-slate-400">
+                Every recommendation explains why it was chosen based on your verified mastery, prerequisites, and review history.
+              </p>
+            </div>
+            <Link href="/coach" className="text-xs font-semibold text-blue-400 hover:underline">
+              Discuss My Plan with AI Coach →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {explainableRecs.map((rec: any) => (
+              <div
+                key={rec.id}
+                className="p-4 rounded-xl border border-slate-800 bg-[#111827] flex flex-col justify-between gap-4"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2 text-[11px] font-mono">
+                    <span className="text-blue-400 uppercase font-semibold">{rec.type}</span>
+                    <span className="text-slate-400 tabular-nums">{rec.durationMins || rec.estimatedMins} min</span>
+                  </div>
+                  <h3 className="text-sm font-semibold text-white">{rec.title}</h3>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    <strong className="text-slate-100">Why selected:</strong> {rec.whySelected}
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                  <span className="font-mono text-[10px] text-slate-400">{rec.evidenceBadge}</span>
+                  <Link
+                    href={rec.actionUrl || rec.href || '/roadmap'}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-blue-400 hover:text-blue-300 whitespace-nowrap"
+                  >
+                    <span>{rec.actionLabel}</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Main Split: Today's Study Plan + Next Milestone & Weak Concepts */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">

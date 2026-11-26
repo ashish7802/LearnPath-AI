@@ -152,3 +152,68 @@ test('Assessment, Prerequisite Locking, and SM-2 Revision integration', () => {
   const rev = calculateNextReview(4, { repetitionCount: 1, intervalDays: 1, easeFactor: 2.5 });
   assert.equal(rev.intervalDays, 6);
 });
+
+test('Adaptive Engine: Natural-Language Goal Parser extracts career track, level, study time, and language', async () => {
+  const {
+    parseNaturalLanguageGoal,
+    buildAssessmentRemediation,
+    buildExplainableRecommendations,
+    CONCEPT_VISUALIZATIONS,
+    getVisualizationForTopic,
+  } = await import('../src/lib/adaptive-engine');
+
+  const pyGoal = parseNaturalLanguageGoal(
+    'I am a complete beginner. I want to become a Python developer in six months. I can study one hour every day.'
+  );
+  assert.equal(pyGoal.careerGoal, 'software-engineer');
+  assert.equal(pyGoal.experienceLevel, 'absolute-zero');
+  assert.equal(pyGoal.dailyStudyMinutes, 60);
+  assert.equal(pyGoal.targetMonths, 6);
+  assert.equal(pyGoal.preferredLanguage, 'english');
+
+  const hinglishAiGoal = parseNaturalLanguageGoal(
+    'Main bilkul zero se AI aur LLM apps banana chahta hoon. Roz 45 minutes padh sakta hoon.'
+  );
+  assert.equal(hinglishAiGoal.careerGoal, 'ai-engineer');
+  assert.equal(hinglishAiGoal.dailyStudyMinutes, 45);
+  assert.equal(hinglishAiGoal.preferredLanguage, 'hinglish');
+
+  // Remediation test for failed assessment
+  const failedRemediation = buildAssessmentRemediation({
+    topicId: 'comp-101',
+    score: 50,
+    passed: false,
+    feedback: [
+      {
+        order: 1,
+        prompt: 'Where does the CPU fetch active instructions?',
+        isCorrect: false,
+        explanation: 'CPU fetches active instructions from RAM.',
+      },
+    ],
+  });
+  assert.equal(failedRemediation.passed, false);
+  assert.ok(failedRemediation.missingConcepts.length > 0);
+  assert.ok(failedRemediation.recommendedMicroLessons.length > 0);
+
+  // Explainable recommendations test
+  const recs = buildExplainableRecommendations({
+    careerGoal: 'software-engineer',
+    dailyStudyMinutes: 60,
+    topicProgress: [{ topicId: 'comp-101', status: 'NEEDS_REVISION', bestScore: 55 }],
+    dueRevisions: [],
+  });
+  assert.ok(recs.length >= 2, 'Generates explainable recommendations');
+  assert.equal(recs[0].type, 'remediation', 'Prioritizes remediation when a topic needs revision');
+  assert.ok(recs[0].whySelected.includes('55%'), 'Explains why remediation was selected with evidence');
+
+  // Interactive concept visualizations check
+  assert.ok(CONCEPT_VISUALIZATIONS.length >= 5, 'Has at least 5 interactive concept visualizations');
+  for (const viz of CONCEPT_VISUALIZATIONS) {
+    assert.ok(viz.steps.length >= 3, `Visualization ${viz.id} has at least 3 steps`);
+    assert.ok(viz.comprehensionQuestion.options.length >= 3, `Visualization ${viz.id} has comprehension check`);
+  }
+  assert.equal(getVisualizationForTopic('comp-101').id, 'cpu-ram-cycle');
+  assert.equal(getVisualizationForTopic('dsa-101').id, 'binary-search');
+});
+

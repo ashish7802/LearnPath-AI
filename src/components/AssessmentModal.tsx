@@ -151,6 +151,46 @@ export default function AssessmentModal({
                 <p className="text-xs max-w-md mx-auto text-slate-200">{result.message}</p>
               </div>
 
+              {result.remediation && (
+                <div className="p-4 rounded-xl border border-blue-500/30 bg-[#0B1120] space-y-3 text-xs">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono text-[11px] uppercase tracking-wider text-blue-400 font-semibold">
+                      Adaptive Diagnostic &amp; Remediation Engine
+                    </span>
+                    <span className="font-mono text-[11px] text-slate-400">
+                      {result.remediation.passed ? 'Ready for Next Skill' : 'Targeted Micro-Lesson Review'}
+                    </span>
+                  </div>
+                  <p className="text-slate-200 leading-relaxed">{result.remediation.explanation}</p>
+
+                  {result.remediation.recommendedMicroLessons?.length > 0 && (
+                    <div className="space-y-2 pt-1">
+                      <div className="font-semibold text-slate-300">
+                        Recommended Micro-Lessons to Review Before Retaking:
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {result.remediation.recommendedMicroLessons.map((ml: any) => (
+                          <div
+                            key={ml.id}
+                            className="p-2.5 rounded-lg border border-slate-800 bg-[#111827] space-y-1"
+                          >
+                            <div className="text-[11px] text-blue-400 font-medium">{ml.subtopicTitle}</div>
+                            <div className="font-semibold text-white">{ml.title}</div>
+                            <div className="text-[11px] text-slate-400 leading-snug">{ml.reason}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="pt-2 border-t border-slate-800/80 text-slate-300 flex items-center justify-between gap-2">
+                    <span>
+                      <strong className="text-blue-400">Next Action:</strong> {result.remediation.nextActionText}
+                    </span>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-3">
                 <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">
                   Question Breakdown &amp; Explanations

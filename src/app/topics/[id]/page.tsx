@@ -16,6 +16,7 @@ import {
 import CodingRunner from '@/components/CodingRunner';
 import AssessmentModal from '@/components/AssessmentModal';
 import InteractiveMicroLesson from '@/components/InteractiveMicroLesson';
+import ConceptVisualizer from '@/components/ConceptVisualizer';
 
 export default function TopicPage() {
   const params = useParams();
@@ -218,6 +219,27 @@ export default function TopicPage() {
             ))}
           </ul>
         </div>
+      </section>
+
+      {/* Interactive Step-by-Step Animated Concept Visualizer */}
+      <section className="space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+          <div className="space-y-1">
+            <h2 className="font-display text-xl font-bold text-white">
+              Interactive Visual Concept Simulation
+            </h2>
+            <p className="text-sm text-slate-400">
+              Step through the underlying execution model at your own pace, inspect state changes, or switch to accessible text transcript mode.
+            </p>
+          </div>
+          <Link
+            href={`/coach?topic=${topic.id}`}
+            className="text-xs font-semibold text-blue-400 hover:text-blue-300 whitespace-nowrap shrink-0"
+          >
+            Ask AI Coach About This Topic →
+          </Link>
+        </div>
+        <ConceptVisualizer topicId={topic.id} allowConceptSwitch={true} />
       </section>
 
       {/* Deep Nested Subtopics & Micro-Lessons */}

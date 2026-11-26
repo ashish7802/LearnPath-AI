@@ -124,10 +124,25 @@ export function transpileSimplePythonToJs(pyCode: string): string | null {
       continue;
     }
 
-    const defMatch = trimmed.match(/^def\s+([a-zA-Z_]\w*)\s*\(([^)]*)\)\s*:\s*$/);
+    const defMatch = trimmed.match(/^def\s+([a-zA-Z_]\w*)\s*\(([^)]*)\)\s*(?:->\s*[^:]+)?:\s*$/);
     if (defMatch) {
-      out.push(`${' '.repeat(indent)}function ${defMatch[1]}(${defMatch[2]}) {`);
+      const cleanParams = defMatch[2]
+        .split(',')
+        .map((p) => p.split(':')[0].trim())
+        .filter(Boolean)
+        .join(', ');
+      out.push(`${' '.repeat(indent)}function ${defMatch[1]}(${cleanParams}) {`);
       indentStack.push(indent + 2);
+      continue;
+    }
+
+    const inlineIfReturnMatch = trimmed.match(/^if\s+(.+?):\s*return\s+(.+)$/);
+    if (inlineIfReturnMatch) {
+      out.push(
+        `${' '.repeat(indent)}if (${convertExpr(inlineIfReturnMatch[1])}) { return ${convertExpr(
+          inlineIfReturnMatch[2]
+        )}; }`
+      );
       continue;
     }
 
