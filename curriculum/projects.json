@@ -46,6 +46,75 @@
     "rubricJson": "{\"api_design\": 35, \"database_integrity\": 30, \"testing\": 20, \"security\": 15}"
   },
   {
+    "id": "proj-web-portfolio",
+    "careerPathId": "web-developer",
+    "phaseNumber": 1,
+    "title": "Accessible Full-Stack Knowledge Base & Study App",
+    "description": "Build a responsive, semantic web application with HTML/CSS Grid, React state management, search filtering, keyboard navigation, and REST API persistence.",
+    "objectives": [
+      "Construct accessible semantic HTML landmarks and responsive CSS Grid layouts",
+      "Implement immutable React state updates with live search and category filters",
+      "Connect frontend forms to a validated backend API with error handling"
+    ],
+    "requirements": [
+      "Responsive layout working cleanly from 390px mobile to 1440px desktop",
+      "Full CRUD notes/flashcards persisted via backend API",
+      "WCAG AA contrast and keyboard-accessible modals and forms",
+      "Clean TypeScript interfaces for all domain models"
+    ],
+    "deliverables": [
+      "GitHub repository with frontend & backend source code",
+      "Live deployed URL and accessibility audit notes"
+    ],
+    "rubricJson": "{\"accessibility_ux\": 30, \"state_architecture\": 30, \"responsiveness\": 20, \"code_quality\": 20}"
+  },
+  {
+    "id": "proj-mobile-habit",
+    "careerPathId": "mobile-developer",
+    "phaseNumber": 1,
+    "title": "Offline-First Daily Study & Habit Tracker Mobile App",
+    "description": "Design and implement a thumb-friendly mobile application with stack and bottom-tab navigation, offline storage, streak tracking, and clean touch interactions.",
+    "objectives": [
+      "Design mobile screens respecting safe area insets and 44px minimum touch targets",
+      "Implement Stack + Bottom Tab navigation without losing screen state",
+      "Persist habits locally so the app works seamlessly offline"
+    ],
+    "requirements": [
+      "3 primary bottom tabs: Today, Progress, Settings",
+      "Create, complete, and edit daily habits with local persistence",
+      "Weekly streak visualization and clear empty/loading states",
+      "Unit tests for streak calculation logic"
+    ],
+    "deliverables": [
+      "GitHub repository (React Native / Expo or Flutter)",
+      "Screen walkthrough GIF or live Expo snack preview"
+    ],
+    "rubricJson": "{\"mobile_ergonomics\": 35, \"offline_persistence\": 30, \"navigation\": 20, \"testing\": 15}"
+  },
+  {
+    "id": "proj-ds-analytics",
+    "careerPathId": "data-scientist",
+    "phaseNumber": 2,
+    "title": "Product Retention & A/B Experimentation Analytics Report",
+    "description": "Analyze real-world user funnel data using Python, Pandas, and SQL to clean outliers, compute cohort retention, run hypothesis testing, and publish executive visual insights.",
+    "objectives": [
+      "Clean missing values, duplicate events, and skewed outliers transparently",
+      "Compare control vs treatment groups using statistical significance checks",
+      "Communicate clear business recommendations backed by charts"
+    ],
+    "requirements": [
+      "Reproducible Python/Pandas notebook or modular analysis scripts",
+      "SQL cohort query aggregating weekly user retention",
+      "Median vs mean outlier impact comparison",
+      "Executive summary explaining correlation vs causation caveats"
+    ],
+    "deliverables": [
+      "GitHub repository with cleaned pipeline and SQL queries",
+      "Visual report (Markdown/HTML) with labeled charts"
+    ],
+    "rubricJson": "{\"statistical_rigor\": 35, \"data_cleaning\": 25, \"visual_clarity\": 25, \"storytelling\": 15}"
+  },
+  {
     "id": "proj-ml-housing",
     "careerPathId": "ml-engineer",
     "phaseNumber": 2,
@@ -90,5 +159,51 @@
       "Demonstration video or interactive live URL"
     ],
     "rubricJson": "{\"retrieval_quality\": 35, \"citation_fidelity\": 30, \"architecture\": 20, \"ux\": 15}"
+  },
+  {
+    "id": "proj-cyber-audit",
+    "careerPathId": "cybersecurity-engineer",
+    "phaseNumber": 2,
+    "title": "Web Security Hardening & Threat Model Lab",
+    "description": "Audit a sample web application against the OWASP Top 10, remediate SQLi/XSS/broken-auth flaws, write automated security regression tests, and author a clear threat model.",
+    "objectives": [
+      "Identify entry points, trust boundaries, and injection sinks",
+      "Replace raw SQL concatenation and unsafe HTML sinks with safe patterns",
+      "Implement rate limiting, salted password hashing, and strict input schemas"
+    ],
+    "requirements": [
+      "Written Threat Model covering CIA Triad risks",
+      "Parameterized database queries and output escaping patches",
+      "Automated test suite verifying XSS/SQLi payloads are neutralized",
+      "Zero hardcoded secrets in git history"
+    ],
+    "deliverables": [
+      "GitHub repository with hardened code and security test suite",
+      "SECURITY_AUDIT.md explaining each remediation"
+    ],
+    "rubricJson": "{\"threat_modeling\": 30, \"remediation_quality\": 35, \"automated_tests\": 20, \"documentation\": 15}"
+  },
+  {
+    "id": "proj-cloud-cicd",
+    "careerPathId": "cloud-devops-engineer",
+    "phaseNumber": 2,
+    "title": "Containerized Multi-Service App with Automated CI/CD",
+    "description": "Package a web API and database using multi-stage Dockerfiles, orchestrate local stacks with Docker Compose, and configure a GitHub Actions CI/CD pipeline with health checks.",
+    "objectives": [
+      "Write a lean, non-root multi-stage Dockerfile with zero baked secrets",
+      "Configure health-check endpoints and persistent database volumes",
+      "Automate lint, unit tests, and container image build on every pull request"
+    ],
+    "requirements": [
+      "Multi-stage Dockerfile running as a non-root user",
+      "docker-compose.yml with service networking and volume mounts",
+      "CI workflow file running automated tests before build",
+      "Runbook documenting rollback and environment variable setup"
+    ],
+    "deliverables": [
+      "GitHub repository with Dockerfile, Compose config, and CI workflow",
+      "Architecture diagram and deployment runbook in README.md"
+    ],
+    "rubricJson": "{\"container_security\": 30, \"automation_pipeline\": 30, \"reliability\": 25, \"runbook\": 15}"
   }
 ]

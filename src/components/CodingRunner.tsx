@@ -1,15 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  Code2,
-  Play,
-  CheckCircle2,
-  XCircle,
-  Lightbulb,
-  Terminal,
-  ShieldCheck
-} from 'lucide-react';
+import { Play, CheckCircle2, XCircle, Lightbulb, RotateCcw } from 'lucide-react';
 
 interface Props {
   topicId: string;
@@ -21,124 +13,161 @@ export default function CodingRunner({ topicId, challenge, onSuccess }: Props) {
   const [code, setCode] = useState(challenge.starterCode || '');
   const [running, setRunning] = useState(false);
   const [executionResult, setExecutionResult] = useState<any>(null);
+  const [xpNotice, setXpNotice] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
   const [showHint, setShowHint] = useState(false);
 
   const handleRun = async () => {
     setRunning(true);
+    setErrorMsg('');
+    setXpNotice('');
     try {
       const res = await fetch('/api/coding/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topicId, code })
+        body: JSON.stringify({ topicId, code }),
       });
       const data = await res.json();
-      setExecutionResult(data.result);
-      if (data.result?.passed && onSuccess) {
-        onSuccess();
+      if (!res.ok) {
+        setErrorMsg(data.error || 'Could not execute tests.');
+        return;
       }
-    } catch (err) {
-      console.error(err);
+      setExecutionResult(data.result);
+      if (data.result?.passed) {
+        if (data.xpAwarded) {
+          setXpNotice(`All tests passed! +${data.xpAwarded} XP recorded.`);
+        }
+        if (onSuccess) onSuccess();
+      }
+    } catch {
+      setErrorMsg('Network error running sandbox tests.');
     } finally {
       setRunning(false);
     }
   };
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/60 overflow-hidden space-y-0">
-      {/* Instructions Header */}
-      <div className="p-4 border-b border-slate-800 bg-slate-950/60 space-y-2">
-        <div className="flex items-center justify-between">
-          <h4 className="text-xs font-bold text-white flex items-center gap-2">
-            <Terminal className="w-4 h-4 text-indigo-400" />
-            {challenge.title}
-          </h4>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-indigo-300 border border-slate-700">
-            {challenge.language?.toUpperCase() || 'PYTHON'}
+    <div className="rounded-xl border border-slate-800 bg-[#111827] overflow-hidden">
+      <div className="p-5 border-b border-slate-800 space-y-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h4 className="text-base font-semibold text-white">{challenge.title}</h4>
+          <span className="text-xs font-mono text-slate-400">
+            Language: {challenge.language || 'python'}
           </span>
         </div>
-        <p className="text-xs text-slate-300 leading-relaxed">{challenge.instructions}</p>
+        <p className="text-sm text-slate-300 leading-relaxed">{challenge.instructions}</p>
       </div>
 
-      {/* Editor & Controls */}
-      <div className="relative">
+      <div>
         <textarea
-          rows={10}
+          rows={9}
           value={code}
           onChange={(e) => setCode(e.target.value)}
+          aria-label={`Code editor for ${challenge.title}`}
           spellCheck={false}
-          className="w-full bg-slate-950 p-4 font-mono text-xs text-indigo-300 leading-relaxed border-none focus:outline-none focus:ring-0 resize-y"
+          className="w-full bg-[#0B1120] p-4 font-mono text-sm text-slate-100 leading-relaxed border-none focus:outline-none resize-y"
         />
 
-        <div className="p-3 border-t border-slate-800 bg-slate-950/80 flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => setShowHint(!showHint)}
-            className="text-[11px] text-amber-400 hover:text-amber-300 flex items-center gap-1.5"
-          >
-            <Lightbulb className="w-3.5 h-3.5" />
-            {showHint ? 'Hide Hint' : 'Need a Progressive Hint?'}
-          </button>
+        <div className="px-5 py-3.5 border-t border-slate-800 bg-[#111827] flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => setShowHint(!showHint)}
+              className="text-xs font-medium text-amber-300 hover:text-amber-200 inline-flex items-center gap-1.5 transition-colors"
+            >
+              <Lightbulb className="w-4 h-4" />
+              <span>{showHint ? 'Hide Hint' : 'Show Hint'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setCode(challenge.starterCode || '');
+                setExecutionResult(null);
+                setErrorMsg('');
+                setXpNotice('');
+              }}
+              className="text-xs font-medium text-slate-400 hover:text-slate-200 inline-flex items-center gap-1.5 transition-colors"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Reset Starter Code</span>
+            </button>
+          </div>
 
           <button
             type="button"
             disabled={running}
             onClick={handleRun}
-            className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-2 transition-colors disabled:opacity-50"
+            className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold inline-flex items-center gap-2 transition-colors disabled:opacity-50"
           >
-            <Play className="w-3.5 h-3.5 fill-current" />
-            {running ? 'Running Tests...' : 'Execute & Run Test Suite'}
+            <Play className="w-3.5 h-3.5" />
+            <span>{running ? 'Running Sandbox Tests...' : 'Run Tests'}</span>
           </button>
         </div>
       </div>
 
-      {/* Progressive Hint Drawer */}
       {showHint && (
-        <div className="p-4 bg-amber-500/10 border-t border-amber-500/20 text-xs text-amber-300 space-y-1">
-          <div className="font-semibold flex items-center gap-1">
-            <Lightbulb className="w-3.5 h-3.5" /> Conceptual Hint:
-          </div>
-          <p className="text-[11px] leading-relaxed">{challenge.solutionHint}</p>
+        <div className="px-5 py-3.5 bg-amber-500/10 border-t border-amber-500/20 text-xs text-amber-200 leading-relaxed">
+          <strong>Hint: </strong>
+          {challenge.solutionHint}
         </div>
       )}
 
-      {/* Test Execution Output */}
+      {errorMsg && (
+        <div className="px-5 py-3 bg-rose-500/10 border-t border-rose-500/20 text-xs text-rose-300">
+          {errorMsg}
+        </div>
+      )}
+
+      {xpNotice && (
+        <div className="px-5 py-3 bg-emerald-500/10 border-t border-emerald-500/20 text-xs font-medium text-emerald-300">
+          {xpNotice}
+        </div>
+      )}
+
       {executionResult && (
-        <div className="p-4 border-t border-slate-800 bg-slate-950 space-y-3">
+        <div className="p-5 border-t border-slate-800 bg-[#0B1120] space-y-4">
           <div className="flex items-center justify-between text-xs">
-            <span className="font-bold text-slate-200">Test Execution Results:</span>
+            <span className="font-semibold text-white">Sandbox Verification Results</span>
             <span
-              className={`font-mono text-[10px] px-2 py-0.5 rounded font-bold ${
-                executionResult.passed
-                  ? 'bg-emerald-500/20 text-emerald-400'
-                  : 'bg-rose-500/20 text-rose-400'
+              className={`font-mono font-semibold tabular-nums ${
+                executionResult.passed ? 'text-emerald-400' : 'text-rose-400'
               }`}
             >
-              {executionResult.testsPassed} / {executionResult.testsTotal} Passed
+              {executionResult.testsPassed} / {executionResult.testsTotal} Tests Passed
             </span>
           </div>
 
-          <div className="space-y-1.5">
+          <div className="divide-y divide-slate-800 rounded-lg border border-slate-800 bg-[#111827]">
             {executionResult.visibleResults?.map((t: any, idx: number) => (
-              <div
-                key={idx}
-                className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-xs flex items-center justify-between"
-              >
-                <div className="space-y-0.5">
-                  <div className="text-[11px] text-slate-300 font-medium">{t.description}</div>
-                  <div className="text-[10px] text-slate-500 font-mono">Input: {t.input}</div>
+              <div key={idx} className="p-3.5 flex items-start justify-between gap-4 text-xs">
+                <div className="space-y-1 min-w-0">
+                  <div className="font-medium text-slate-200">{t.description}</div>
+                  <div className="font-mono text-slate-400">
+                    Input: {t.input} · Expected: {t.expected} · Actual: {t.actual}
+                  </div>
                 </div>
-                {t.passed ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                ) : (
-                  <XCircle className="w-4 h-4 text-rose-400 shrink-0" />
-                )}
+                <span
+                  className={`inline-flex items-center gap-1 font-medium shrink-0 ${
+                    t.passed ? 'text-emerald-400' : 'text-rose-400'
+                  }`}
+                >
+                  {t.passed ? (
+                    <>
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>Pass</span>
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className="w-4 h-4" />
+                      <span>Fail</span>
+                    </>
+                  )}
+                </span>
               </div>
             ))}
           </div>
 
-          <div className="p-2.5 rounded bg-slate-900 text-[10px] font-mono text-slate-400 border border-slate-800">
-            {executionResult.outputLog}
-          </div>
+          <p className="font-mono text-xs text-slate-400">{executionResult.outputLog}</p>
         </div>
       )}
     </div>

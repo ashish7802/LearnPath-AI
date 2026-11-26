@@ -1,0 +1,375 @@
+[
+  {
+    "id": "net-http-01",
+    "track": "systems",
+    "subjectId": "subj-databases-net",
+    "moduleId": "mod-networking-core",
+    "moduleTitle": "Computer Networking & How the Internet Works",
+    "title": "IP Addresses, DNS, TCP/IP & HTTP Request-Response Cycle",
+    "slug": "how-the-internet-works",
+    "difficulty": "beginner",
+    "order": 1,
+    "prerequisites": ["terminal-101"],
+    "plainExplanation": "When you type a website name into your browser, it is just like mailing a letter. DNS is the phonebook that translates a human name (like example.com) into a numbered street address (IP address). TCP splits your message into numbered packets so nothing gets lost, and HTTP is the polite language browsers and servers speak to ask for pages and send back replies.",
+    "whyItMatters": "Every web app, mobile app, cloud server, and AI API communicates over networks. Knowing DNS, HTTP methods (GET/POST/PUT/DELETE), and status codes (200, 401, 404, 500) lets you debug real production issues in seconds.",
+    "learningObjectives": [
+      "Trace what happens step-by-step from typing a URL to seeing a webpage render",
+      "Explain the roles of DNS, IP addresses, ports, and HTTPS encryption (TLS)",
+      "Distinguish HTTP methods and status code families (2xx, 3xx, 4xx, 5xx)"
+    ],
+    "estimatedLessonMins": 30,
+    "estimatedPracticeMins": 25,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Confusing 401 Unauthorized (not logged in) with 403 Forbidden (logged in, but lacking permission)",
+      "Putting sensitive secrets like passwords in URL query parameters instead of HTTPS request bodies"
+    ],
+    "resources": [
+      {
+        "title": "MDN: Overview of HTTP",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview",
+        "provider": "MDN Web Docs",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "Cloudflare Learning: What is DNS?",
+        "url": "https://www.cloudflare.com/learning/dns/what-is-dns/",
+        "provider": "Cloudflare Learning",
+        "resourceType": "tutorial",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "Networking & HTTP Fundamentals Check",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "What job does DNS (Domain Name System) perform when you visit learnpath.org?",
+          "options": [
+            "It translates the human-readable domain name into a numeric IP address",
+            "It compiles JavaScript into binary machine code",
+            "It stores the website's SQL database tables",
+            "It boosts Wi-Fi antenna voltage"
+          ],
+          "correctAnswer": "It translates the human-readable domain name into a numeric IP address",
+          "explanation": "Computers route packets using IP addresses; DNS maps memorable domain names to those IP addresses.",
+          "order": 1
+        },
+        {
+          "questionType": "mcq",
+          "prompt": "A server responds with HTTP status code 404. What does the 4xx family indicate?",
+          "options": [
+            "Success — the page loaded",
+            "Client-side error — the requested resource could not be found at that path",
+            "The server's hard drive caught fire",
+            "Permanent redirect to another site"
+          ],
+          "correctAnswer": "Client-side error — the requested resource could not be found at that path",
+          "explanation": "4xx codes indicate client request errors (400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found), whereas 5xx indicate server failures.",
+          "order": 2
+        }
+      ]
+    },
+    "codingChallenge": {
+      "title": "Classify HTTP Status Codes",
+      "instructions": "Write a JavaScript function `classifyStatus(code)` that returns `'Success'` for 200-299, `'Redirect'` for 300-399, `'Client Error'` for 400-499, `'Server Error'` for 500-599, and `'Unknown'` otherwise.",
+      "starterCode": "function classifyStatus(code) {\n  // Return the HTTP status family name\n  return 'Unknown';\n}",
+      "language": "javascript",
+      "visibleTests": [
+        { "input": "classifyStatus(200)", "expected": "Success", "description": "200 is Success" },
+        { "input": "classifyStatus(404)", "expected": "Client Error", "description": "404 is Client Error" },
+        { "input": "classifyStatus(503)", "expected": "Server Error", "description": "503 is Server Error" }
+      ],
+      "hiddenTests": [
+        { "input": "classifyStatus(301)", "expected": "Redirect", "description": "301 is Redirect" }
+      ],
+      "solutionHint": "Use `if (code >= 200 && code < 300) return 'Success';` and repeat for 300, 400, and 500 ranges."
+    }
+  },
+  {
+    "id": "ds-stats-01",
+    "track": "data",
+    "subjectId": "subj-data-science",
+    "moduleId": "mod-ds-foundations",
+    "moduleTitle": "Data Science: Practical Statistics & Decision Analytics",
+    "title": "Descriptive Statistics: Mean, Median, Variance & Outliers",
+    "slug": "practical-statistics-basics",
+    "difficulty": "beginner",
+    "order": 1,
+    "prerequisites": ["py-foundations-03"],
+    "plainExplanation": "Statistics is the art of summarizing thousands of messy numbers into clear truth without being fooled by extremes. Imagine 9 students earn $20/hour and 1 billionaire walks into the room: the average (Mean) jumps sky-high, while the middle value (Median) stays $20/hour and tells the honest story.",
+    "whyItMatters": "Data scientists, product analysts, and ML engineers use distributions, medians, and variance every day to evaluate A/B tests, detect anomalies, and avoid misleading business decisions.",
+    "learningObjectives": [
+      "Know when Median beats Mean (skewed data and outliers)",
+      "Measure data spread using Range and Standard Deviation",
+      "Distinguish correlation (moving together) from causation (one causes the other)"
+    ],
+    "estimatedLessonMins": 30,
+    "estimatedPracticeMins": 30,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Reporting only the arithmetic mean on heavily skewed data like salaries or website latency",
+      "Claiming X causes Y merely because X and Y appear correlated on a chart"
+    ],
+    "resources": [
+      {
+        "title": "Khan Academy: Statistics and Probability",
+        "url": "https://www.khanacademy.org/math/statistics-probability",
+        "provider": "Khan Academy",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "Kaggle Learn: Pandas & Data Analysis",
+        "url": "https://www.kaggle.com/learn/pandas",
+        "provider": "Kaggle Learn",
+        "resourceType": "practice",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "Practical Statistics & Outliers Verification",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "A small startup has salaries: $60k, $62k, $65k, $68k, and $950k (CEO). Which metric best represents a typical employee salary?",
+          "options": [
+            "Median ($65k), because it is resistant to extreme outliers",
+            "Mean ($241k), because it includes everyone equally",
+            "Maximum ($950k)",
+            "Range ($890k)"
+          ],
+          "correctAnswer": "Median ($65k), because it is resistant to extreme outliers",
+          "explanation": "A single huge outlier pulls the arithmetic mean far away from the majority of values; the median stays centered.",
+          "order": 1
+        },
+        {
+          "questionType": "mcq",
+          "prompt": "Ice cream sales and sunburn cases both rise every July. What is the correct statistical conclusion?",
+          "options": [
+            "Eating ice cream causes sunburn",
+            "They are correlated because of a confounding variable (hot sunny summer weather)",
+            "Sunburn makes people buy ice cream",
+            "Statistics cannot measure summer weather"
+          ],
+          "correctAnswer": "They are correlated because of a confounding variable (hot sunny summer weather)",
+          "explanation": "Correlation does not imply causation. A third hidden factor (summer sun) drives both variables.",
+          "order": 2
+        }
+      ]
+    },
+    "codingChallenge": {
+      "title": "Compute the Median of a Numeric Dataset",
+      "instructions": "Write a JavaScript function `calcMedian(nums)` that returns the median of a non-empty array of numbers without mutating the input array. For even lengths, return the average of the two middle numbers.",
+      "starterCode": "function calcMedian(nums) {\n  // Sort a copy ascending and find the middle value\n  return 0;\n}",
+      "language": "javascript",
+      "visibleTests": [
+        { "input": "calcMedian([10, 2, 100, 4, 6])", "expected": "6", "description": "Odd count returns middle sorted value" },
+        { "input": "calcMedian([10, 20, 30, 40])", "expected": "25", "description": "Even count averages the two middle values" }
+      ],
+      "hiddenTests": [
+        { "input": "calcMedian([60, 62, 65, 68, 950])", "expected": "65", "description": "Resistant to large outlier" }
+      ],
+      "solutionHint": "Sort numerically with `[...nums].sort((a, b) => a - b)`. Check `mid = Math.floor(sorted.length / 2)`."
+    }
+  },
+  {
+    "id": "sec-core-01",
+    "track": "cybersecurity",
+    "subjectId": "subj-cybersecurity",
+    "moduleId": "mod-sec-foundations",
+    "moduleTitle": "Cybersecurity Fundamentals: Threat Modeling & Defense",
+    "title": "Authentication, Hashing, Encryption & The CIA Triad",
+    "slug": "cybersecurity-cia-hashing",
+    "difficulty": "beginner",
+    "order": 1,
+    "prerequisites": ["net-http-01"],
+    "plainExplanation": "Cybersecurity protects systems around three pillars called the CIA Triad: Confidentiality (only authorized eyes see private data), Integrity (data is not secretly tampered with), and Availability (the service stays online when needed). Passwords are never stored in plain text — we scramble them one-way with salted cryptographic hashes like bcrypt.",
+    "whyItMatters": "One weak password table or unvalidated input can expose millions of users. Every engineer — whether web, mobile, cloud, or AI — must understand secure authentication and defensive coding from day one.",
+    "learningObjectives": [
+      "Explain Confidentiality, Integrity, and Availability (CIA Triad) with real examples",
+      "Distinguish one-way Hashing (passwords) from two-way Encryption (HTTPS/secrets)",
+      "Prevent SQL Injection and Cross-Site Scripting (XSS) using parameterized queries and escaping"
+    ],
+    "estimatedLessonMins": 30,
+    "estimatedPracticeMins": 30,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Confusing Base64 encoding with encryption (Base64 provides zero security; anyone can decode it instantly)",
+      "Building SQL queries by gluing user strings together instead of using parameterized bindings"
+    ],
+    "resources": [
+      {
+        "title": "OWASP Top 10 Web Application Security Risks",
+        "url": "https://owasp.org/www-project-top-ten/",
+        "provider": "OWASP Foundation",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "MDN Web Security Fundamentals",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/Security",
+        "provider": "MDN Web Docs",
+        "resourceType": "documentation",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "Cybersecurity & Defensive Engineering Check",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "Why do secure systems store salted password hashes instead of encrypted passwords?",
+          "options": [
+            "Hashing is one-way so even if the database leaks, attackers cannot decrypt original passwords; salting stops rainbow-table lookups",
+            "Hashes take less typing for users",
+            "Encryption does not work on text",
+            "Browsers require plain text hashes in URLs"
+          ],
+          "correctAnswer": "Hashing is one-way so even if the database leaks, attackers cannot decrypt original passwords; salting stops rainbow-table lookups",
+          "explanation": "A strong password hash (bcrypt/Argon2) cannot be reversed, and a unique random salt guarantees identical passwords produce completely different hashes.",
+          "order": 1
+        },
+        {
+          "questionType": "mcq",
+          "prompt": "What is the primary defense against SQL Injection attacks?",
+          "options": [
+            "Using parameterized queries (prepared statements) so user input is strictly treated as data, never executable SQL",
+            "Renaming database tables to random letters",
+            "Hiding the HTML form with CSS",
+            "Asking users politely not to type quotes"
+          ],
+          "correctAnswer": "Using parameterized queries (prepared statements) so user input is strictly treated as data, never executable SQL",
+          "explanation": "Parameterized queries separate SQL code structure from user data bindings at the database driver level.",
+          "order": 2
+        }
+      ]
+    },
+    "codingChallenge": {
+      "title": "HTML Escape Utility (XSS Defense)",
+      "instructions": "Write a JavaScript function `escapeHtml(text)` that safely escapes `&`, `<`, `>`, `\"`, and `'` into `&amp;`, `&lt;`, `&gt;`, `&quot;`, and `&#39;` respectively.",
+      "starterCode": "function escapeHtml(text) {\n  // Escape special HTML characters to prevent XSS\n  return text;\n}",
+      "language": "javascript",
+      "visibleTests": [
+        { "input": "escapeHtml('<script>alert(1)</script>')", "expected": "&lt;script&gt;alert(1)&lt;/script&gt;", "description": "Neutralizes script tags" },
+        { "input": "escapeHtml('A & B \"quoted\"')", "expected": "A &amp; B &quot;quoted&quot;", "description": "Escapes ampersand and double quotes" }
+      ],
+      "hiddenTests": [
+        { "input": "escapeHtml(\"It's safe\")", "expected": "It&#39;s safe", "description": "Escapes single quote" }
+      ],
+      "solutionHint": "Replace `&` FIRST (so you don't double-escape other entities), then `<`, `>`, `\"`, and `'`."
+    }
+  },
+  {
+    "id": "cloud-docker-01",
+    "track": "cloud",
+    "subjectId": "subj-cloud-devops",
+    "moduleId": "mod-cloud-devops",
+    "moduleTitle": "Cloud Computing, Containers & DevOps Automation",
+    "title": "Docker Containers, Images & Reproducible Deployments",
+    "slug": "docker-containers-basics",
+    "difficulty": "intermediate",
+    "order": 1,
+    "prerequisites": ["terminal-101", "net-http-01"],
+    "plainExplanation": "Have you ever heard a programmer say 'It works on my laptop!' while it crashes on a server? Docker solves this using shipping containers for software. A Dockerfile is the blueprint, an Image is the frozen snapshot containing your code + exact runtime version, and a Container is a running isolated instance of that image anywhere on earth.",
+    "whyItMatters": "Containers and automated CI/CD pipelines power modern cloud infrastructure (AWS, GCP, Azure, Kubernetes). They guarantee your app runs identically on your laptop, in automated tests, and in production.",
+    "learningObjectives": [
+      "Distinguish a Dockerfile (recipe), Docker Image (template), and Container (running instance)",
+      "Explain why containers start in seconds compared to heavy Virtual Machines",
+      "Understand CI/CD pipelines: automated lint, test, build, and zero-downtime deploy"
+    ],
+    "estimatedLessonMins": 30,
+    "estimatedPracticeMins": 30,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Baking secret API keys directly into a Dockerfile image layer instead of injecting environment variables at runtime",
+      "Storing permanent database files inside an ephemeral container without a persistent volume"
+    ],
+    "resources": [
+      {
+        "title": "Docker Official Getting Started Guide",
+        "url": "https://docs.docker.com/get-started/",
+        "provider": "Docker Docs",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "Google Cloud Architecture Center",
+        "url": "https://cloud.google.com/architecture",
+        "provider": "Google Cloud",
+        "resourceType": "documentation",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "Containers & Cloud DevOps Verification",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "Why should you NEVER hardcode production API secrets inside a Dockerfile?",
+          "options": [
+            "Anyone with access to the built image or registry can inspect the layers and steal the secrets",
+            "Dockerfiles cannot read letters or numbers",
+            "Secrets make Docker images run slower",
+            "Linux does not support environment variables"
+          ],
+          "correctAnswer": "Anyone with access to the built image or registry can inspect the layers and steal the secrets",
+          "explanation": "Image layers are cached and portable; secrets should always be injected at runtime via environment variables or a secret manager.",
+          "order": 1
+        },
+        {
+          "questionType": "mcq",
+          "prompt": "What does CI (Continuous Integration) automatically do when a developer pushes code?",
+          "options": [
+            "Runs automated builds, linters, and tests to catch regressions before merging",
+            "Manually emails every user",
+            "Deletes the Git commit history",
+            "Buys new server hardware"
+          ],
+          "correctAnswer": "Runs automated builds, linters, and tests to catch regressions before merging",
+          "explanation": "CI catches broken builds and failing tests immediately on every push or pull request.",
+          "order": 2
+        }
+      ]
+    },
+    "codingChallenge": {
+      "title": "CI/CD Pipeline Stage Validator",
+      "instructions": "Write a JavaScript function `canDeploy(stages)` where `stages` is an array of `{ name: string, passed: boolean, required: boolean }`. Return `true` only if EVERY stage with `required: true` has `passed: true` (optional stages may fail without blocking deploy).",
+      "starterCode": "function canDeploy(stages) {\n  // Return true only when all required pipeline stages passed\n  return false;\n}",
+      "language": "javascript",
+      "visibleTests": [
+        { "input": "canDeploy([{name:'lint',passed:true,required:true},{name:'test',passed:true,required:true},{name:'perf',passed:false,required:false}])", "expected": "true", "description": "Allows deploy when all required stages pass" },
+        { "input": "canDeploy([{name:'lint',passed:true,required:true},{name:'test',passed:false,required:true}])", "expected": "false", "description": "Blocks deploy when a required test stage fails" }
+      ],
+      "hiddenTests": [
+        { "input": "canDeploy([])", "expected": "true", "description": "Empty required set returns true" }
+      ],
+      "solutionHint": "Use `stages.filter(s => s.required).every(s => s.passed)`."
+    }
+  }
+]

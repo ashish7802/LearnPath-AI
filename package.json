@@ -20,6 +20,7 @@
     "test": "node scripts/run-tests.mjs ; node tests/security-and-auth.test.mjs"
   },
   "dependencies": {
+    "@google/genai": "^3.6.1",
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",

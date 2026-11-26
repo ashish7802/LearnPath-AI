@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { UserPlus, User, Mail, Key, AlertCircle, ArrowRight } from 'lucide-react';
+import { User, Mail, Key, AlertCircle, ArrowRight } from 'lucide-react';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -41,61 +41,75 @@ export default function RegisterPage() {
   return (
     <div className="max-w-md mx-auto py-12 space-y-6">
       <div className="text-center space-y-2">
-        <h1 className="text-2xl font-bold text-white tracking-tight">Begin from Zero</h1>
-        <p className="text-xs text-slate-400">Create your free account. 100% open source curriculum.</p>
+        <h1 className="font-display text-2xl font-bold text-slate-50 tracking-tight">
+          Begin from Zero
+        </h1>
+        <p className="text-xs text-slate-400">
+          Create your free account to save micro-lessons, XP, assessments, and projects.
+        </p>
       </div>
 
-      <div className="p-6 rounded-xl border border-slate-800 bg-slate-900/70 space-y-5">
+      <div className="p-6 rounded-xl border border-slate-800 bg-[#111827] space-y-5">
         {error && (
-          <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-center gap-2">
+          <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-slate-300">Your Full Name</label>
+          <div className="space-y-1.5">
+            <label htmlFor="register-name" className="text-xs font-medium text-slate-300 block">
+              Full Name
+            </label>
             <div className="relative">
-              <User className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+              <User className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
               <input
+                id="register-name"
                 type="text"
                 required
+                minLength={2}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Maya Sharma"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
               />
             </div>
           </div>
 
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-slate-300">Email Address</label>
+          <div className="space-y-1.5">
+            <label htmlFor="register-email" className="text-xs font-medium text-slate-300 block">
+              Email Address
+            </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+              <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
               <input
+                id="register-email"
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
               />
             </div>
           </div>
 
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-slate-300">Password (min 6 characters)</label>
+          <div className="space-y-1.5">
+            <label htmlFor="register-password" className="text-xs font-medium text-slate-300 block">
+              Password (minimum 8 characters)
+            </label>
             <div className="relative">
-              <Key className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+              <Key className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
               <input
+                id="register-password"
                 type="password"
                 required
-                minLength={6}
+                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
               />
             </div>
           </div>
@@ -103,17 +117,17 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            {loading ? 'Creating Account...' : 'Continue to Diagnostic Onboarding'}
+            <span>{loading ? 'Creating Account...' : 'Continue to Onboarding'}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>
 
-        <div className="pt-4 border-t border-slate-800/80 text-center">
+        <div className="pt-4 border-t border-slate-800 text-center">
           <p className="text-xs text-slate-400">
             Already have an account?{' '}
-            <Link href="/login" className="text-indigo-400 hover:underline">
+            <Link href="/login" className="text-blue-400 hover:underline">
               Sign In
             </Link>
           </p>

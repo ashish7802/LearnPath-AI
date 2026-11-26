@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { GoogleGenAI } from '@google/genai';
 import { verifySessionToken } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { getTopicById } from '@/lib/curriculum';
 import {
   buildCoachSystemPrompt,
   getDeterministicCoachResponse,
-  CoachRequest
+  CoachRequest,
 } from '@/lib/ai-coach';
 import { aiCoachSchema } from '@/lib/validations';
 import { checkRateLimit } from '@/lib/rate-limit';
@@ -33,8 +34,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Rate limiting per user / IP
-    const rateLimitKey = userId ? `coach_${userId}` : `coach_${req.headers.get('x-forwarded-for') || '127.0.0.1'}`;
+    const rateLimitKey = userId
+      ? `coach_${userId}`
+      : `coach_${req.headers.get('x-forwarded-for') || '127.0.0.1'}`;
     const rateCheck = checkRateLimit(rateLimitKey, 15, 60);
     if (!rateCheck.allowed) {
       return NextResponse.json(
@@ -55,7 +57,6 @@ export async function POST(req: NextRequest) {
     const { topicId, userQuery, language, hintLevel } = validation.data;
     const finalLanguage = language || preferredLanguage;
 
-    // Ground coach in verified curriculum topic
     const topic = topicId ? getTopicById(topicId) : undefined;
     const coachReq: CoachRequest = {
       topicTitle: topic ? topic.title : undefined,
@@ -63,16 +64,25 @@ export async function POST(req: NextRequest) {
       experienceLevel,
       mathComfort,
       userQuery,
-      hintLevel
+      hintLevel,
     };
 
     let replyText = '';
     let responseSource: 'live_model' | 'curriculum_grounded_fallback' = 'curriculum_grounded_fallback';
-    const configuredModel = process.env.AI_COACH_MODEL || 'gemini-1.5-flash';
-    const apiKey = process.env.AI_COACH_API_KEY;
+    const configuredModel = 'gemini-4-hydrogen';
+    const apiKey = process.env.GEMINI_API_KEY || process.env.AI_COACH_API_KEY;
 
     if (apiKey && apiKey.trim() !== '') {
       try {
+        const ai = new GoogleGenAI({
+          apiKey: apiKey.trim(),
+          httpOptions: {
+            headers: {
+              'User-Agent': 'aistudio-build',
+            },
+          },
+        });
+
         const sysPrompt = buildCoachSystemPrompt({
           topicTitle: topic?.title,
           language: finalLanguage,
@@ -80,58 +90,46 @@ export async function POST(req: NextRequest) {
           mathComfort,
         });
 
-        // Fetch recent conversation history (capped at last 4 messages to preserve context window)
         let conversationContext = '';
         if (userId) {
           const recentMessages = await prisma.aiCoachMessage.findMany({
             where: { userId },
             orderBy: { createdAt: 'desc' },
-            take: 4
+            take: 4,
           });
           conversationContext = recentMessages
             .reverse()
-            .map((m) => `${m.role === 'user' ? 'Learner' : 'Coach'}: ${m.content}`)
+            .map((m: any) => `${m.role === 'user' ? 'Learner' : 'Coach'}: ${m.content}`)
             .join('\n');
         }
 
-        const fullPrompt = `${sysPrompt}\n\n${
-          topic
-            ? `GROUNDING CURRICULUM CONTEXT:
+        const groundingSection = topic
+          ? `GROUNDING CURRICULUM CONTEXT:
 Topic: ${topic.title}
 Explanation: ${topic.plainExplanation}
 Objectives: ${topic.learningObjectives.join(', ')}
 Common Pitfalls: ${topic.commonMistakes.join(', ')}`
-            : ''
-        }\n\n${conversationContext ? `RECENT CONVERSATION:\n${conversationContext}\n\n` : ''}Learner Query: ${userQuery}`;
+          : '';
 
-        // 8-second timeout for serverless resilience
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const userPrompt = `${groundingSection ? groundingSection + '\n\n' : ''}${
+          conversationContext ? `RECENT CONVERSATION:\n${conversationContext}\n\n` : ''
+        }Learner Query: ${userQuery}`;
 
-        const apiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${configuredModel}:generateContent?key=${apiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ role: 'user', parts: [{ text: fullPrompt }] }]
-            }),
-            signal: controller.signal
-          }
-        );
+        const response = await ai.models.generateContent({
+          model: configuredModel,
+          contents: userPrompt,
+          config: {
+            systemInstruction: sysPrompt,
+          },
+        });
 
-        clearTimeout(timeoutId);
-
-        if (apiRes.ok) {
-          const data = await apiRes.json();
-          const generated = data.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (generated && generated.trim().length > 0) {
-            replyText = generated.trim();
-            responseSource = 'live_model';
-          }
+        const generated = response.text;
+        if (generated && generated.trim().length > 0) {
+          replyText = generated.trim();
+          responseSource = 'live_model';
         }
       } catch (err) {
-        console.warn('External AI call failed or timed out, using deterministic curriculum coach engine:', err);
+        console.warn('Optional AI model unavailable, using built-in curriculum tutor engine:', err);
       }
     }
 
@@ -140,7 +138,6 @@ Common Pitfalls: ${topic.commonMistakes.join(', ')}`
       responseSource = 'curriculum_grounded_fallback';
     }
 
-    // Persist conversation history safely
     if (userId) {
       await prisma.aiCoachMessage.create({
         data: {
@@ -148,8 +145,8 @@ Common Pitfalls: ${topic.commonMistakes.join(', ')}`
           topicId: topicId || null,
           role: 'user',
           language: finalLanguage,
-          content: userQuery
-        }
+          content: userQuery,
+        },
       });
 
       await prisma.aiCoachMessage.create({
@@ -158,8 +155,8 @@ Common Pitfalls: ${topic.commonMistakes.join(', ')}`
           topicId: topicId || null,
           role: 'assistant',
           language: finalLanguage,
-          content: replyText
-        }
+          content: replyText,
+        },
       });
     }
 
@@ -168,7 +165,7 @@ Common Pitfalls: ${topic.commonMistakes.join(', ')}`
       reply: replyText,
       language: finalLanguage,
       source: responseSource,
-      model: responseSource === 'live_model' ? configuredModel : 'grounded-curriculum-tutor'
+      model: responseSource === 'live_model' ? configuredModel : 'built-in-curriculum-tutor',
     });
   } catch (error) {
     console.error('AI Coach API error:', error);

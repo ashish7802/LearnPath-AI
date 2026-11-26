@@ -1,0 +1,465 @@
+[
+  {
+    "id": "web-html-01",
+    "track": "web",
+    "subjectId": "subj-web-dev",
+    "moduleId": "mod-web-markup",
+    "moduleTitle": "Web Foundations: HTML & Semantic Structure",
+    "title": "HTML from Scratch: Tags, Elements & Semantic Pages",
+    "slug": "html-from-scratch",
+    "difficulty": "beginner",
+    "order": 1,
+    "prerequisites": ["comp-101"],
+    "plainExplanation": "HTML (HyperText Markup Language) is the skeleton of every webpage on the internet. Just like a newspaper has a headline, subheadings, paragraphs, and images, HTML uses simple angle-bracket tags like <h1> and <p> to tell the web browser what each piece of content means.",
+    "whyItMatters": "Before you can style a website with CSS or make it interactive with JavaScript, you need clean, accessible HTML structure. Search engines, screen readers, and browsers rely on semantic HTML to understand your page.",
+    "learningObjectives": [
+      "Understand what an HTML element, opening tag, closing tag, and attribute are",
+      "Build a complete webpage using semantic landmarks (<header>, <main>, <article>, <footer>)",
+      "Create accessible links, images with alt text, lists, and forms"
+    ],
+    "estimatedLessonMins": 25,
+    "estimatedPracticeMins": 25,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Using <div> for everything instead of meaningful tags like <button>, <nav>, and <main>",
+      "Forgetting the alt attribute on images, which breaks accessibility for screen readers"
+    ],
+    "resources": [
+      {
+        "title": "MDN Web Docs: HTML Basics",
+        "url": "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/HTML_basics",
+        "provider": "MDN Web Docs",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "freeCodeCamp Responsive Web Design",
+        "url": "https://www.freecodecamp.org/learn/2022/responsive-web-design/",
+        "provider": "freeCodeCamp",
+        "resourceType": "practice",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "HTML Structure & Semantics Verification",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "Why should you use a <button> tag instead of a clickable <div> for actions on a webpage?",
+          "options": [
+            "<div> tags cannot have click events in browsers",
+            "<button> gives built-in keyboard navigation, focus handling, and screen-reader semantics",
+            "<button> makes the website download faster",
+            "HTML forbids using <div> inside <main>"
+          ],
+          "correctAnswer": "<button> gives built-in keyboard navigation, focus handling, and screen-reader semantics",
+          "explanation": "Native <button> elements automatically support Enter/Space activation, Tab focus, and announce themselves as buttons to assistive technologies.",
+          "order": 1
+        },
+        {
+          "questionType": "mcq",
+          "prompt": "Which HTML tag represents the primary, unique content area of a page?",
+          "options": ["<top>", "<main>", "<center>", "<body-content>"],
+          "correctAnswer": "<main>",
+          "explanation": "<main> is a standard semantic landmark that tells browsers and screen readers where the core page content begins.",
+          "order": 2
+        },
+        {
+          "questionType": "find_bug",
+          "prompt": "Spot the accessibility issue in this image tag: <img src=\"logo.png\">",
+          "options": [
+            "Images must end with </img>",
+            "It is missing a descriptive alt attribute",
+            "src must be uppercase SRC",
+            "PNG files cannot be used in HTML"
+          ],
+          "correctAnswer": "It is missing a descriptive alt attribute",
+          "explanation": "The alt attribute provides text if the image fails to load and lets visually impaired learners understand what the image shows.",
+          "order": 3
+        }
+      ]
+    },
+    "codingChallenge": {
+      "title": "Build a Semantic Card Markup Generator",
+      "instructions": "Write a JavaScript function `buildCard(title, summary)` that returns an HTML string wrapped in an `<article>` tag containing an `<h2>` with the title and a `<p>` with the summary. Example: buildCard('Hello', 'World') -> '<article><h2>Hello</h2><p>World</p></article>'.",
+      "starterCode": "function buildCard(title, summary) {\n  // Return semantic HTML: <article><h2>...</h2><p>...</p></article>\n  return '';\n}",
+      "language": "javascript",
+      "visibleTests": [
+        { "input": "buildCard('HTML', 'Web skeleton')", "expected": "<article><h2>HTML</h2><p>Web skeleton</p></article>", "description": "Wraps title in h2 and summary in p inside article" },
+        { "input": "buildCard('CSS', 'Visual styling')", "expected": "<article><h2>CSS</h2><p>Visual styling</p></article>", "description": "Works with different strings" }
+      ],
+      "hiddenTests": [
+        { "input": "buildCard('Zero', 'Start here')", "expected": "<article><h2>Zero</h2><p>Start here</p></article>", "description": "Handles arbitrary text cleanly" }
+      ],
+      "solutionHint": "Use a template literal: `<article><h2>${title}</h2><p>${summary}</p></article>`."
+    }
+  },
+  {
+    "id": "web-css-01",
+    "track": "web",
+    "subjectId": "subj-web-dev",
+    "moduleId": "mod-web-markup",
+    "moduleTitle": "Web Foundations: HTML & Semantic Structure",
+    "title": "CSS Layout Mastery: Box Model, Flexbox & Responsive Grid",
+    "slug": "css-layout-mastery",
+    "difficulty": "beginner",
+    "order": 2,
+    "prerequisites": ["web-html-01"],
+    "plainExplanation": "If HTML is the skeleton of a house, CSS (Cascading Style Sheets) is the paint, furniture placement, and room dimensions. Every element on a webpage is a rectangular box made of content, padding (space inside), border (the frame), and margin (space outside).",
+    "whyItMatters": "Users view websites on phones, tablets, and wide desktop monitors. Mastering the Box Model, Flexbox (1D rows/columns), and CSS Grid (2D layouts) lets you build clean, responsive interfaces that never break or overlap.",
+    "learningObjectives": [
+      "Explain the CSS Box Model: content, padding, border, and margin",
+      "Align items in rows and columns with Flexbox (justify-content, align-items, gap)",
+      "Create responsive multi-column layouts using CSS Grid and media queries"
+    ],
+    "estimatedLessonMins": 30,
+    "estimatedPracticeMins": 30,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Confusing padding (space inside the border) with margin (space outside the border)",
+      "Setting fixed pixel widths like width: 900px that cause horizontal scrolling on phones"
+    ],
+    "resources": [
+      {
+        "title": "web.dev Learn CSS",
+        "url": "https://web.dev/learn/css/",
+        "provider": "Google web.dev",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "MDN CSS Layout Guide",
+        "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout",
+        "provider": "MDN Web Docs",
+        "resourceType": "documentation",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "CSS Box Model & Responsive Layout Check",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "Which property adds breathing room INSIDE a button between its text and its border?",
+          "options": ["margin", "padding", "z-index", "float"],
+          "correctAnswer": "padding",
+          "explanation": "Padding sits inside the border around the content, whereas margin pushes neighboring elements away outside the border.",
+          "order": 1
+        },
+        {
+          "questionType": "mcq",
+          "prompt": "When should you prefer CSS Grid over Flexbox?",
+          "options": [
+            "When you need to control both rows and columns simultaneously in a 2D layout",
+            "Only when changing text colors",
+            "Only on mobile screens",
+            "CSS Grid replaces HTML completely"
+          ],
+          "correctAnswer": "When you need to control both rows and columns simultaneously in a 2D layout",
+          "explanation": "Flexbox excels at one-dimensional alignment (a row or a column), while CSS Grid excels at two-dimensional layouts (rows AND columns together).",
+          "order": 2
+        }
+      ]
+    },
+    "codingChallenge": {
+      "title": "Calculate Total Box Width",
+      "instructions": "Write a JavaScript function `totalBoxWidth(contentWidth, paddingX, borderX)` that calculates the total rendered width under standard `content-box` sizing: `contentWidth + (paddingX * 2) + (borderX * 2)`.",
+      "starterCode": "function totalBoxWidth(contentWidth, paddingX, borderX) {\n  // Compute total outer width of a content-box element\n  return 0;\n}",
+      "language": "javascript",
+      "visibleTests": [
+        { "input": "totalBoxWidth(200, 16, 2)", "expected": "236", "description": "200 + 32 + 4 = 236" },
+        { "input": "totalBoxWidth(100, 10, 0)", "expected": "120", "description": "100 + 20 + 0 = 120" }
+      ],
+      "hiddenTests": [
+        { "input": "totalBoxWidth(300, 24, 1)", "expected": "350", "description": "Handles border of 1px on both sides" }
+      ],
+      "solutionHint": "Both left and right sides contribute padding and border, so multiply each by 2 and add to contentWidth."
+    }
+  },
+  {
+    "id": "web-js-01",
+    "track": "web",
+    "subjectId": "subj-web-dev",
+    "moduleId": "mod-web-js",
+    "moduleTitle": "Interactive Web Programming: JavaScript & DOM",
+    "title": "JavaScript Fundamentals, Events & DOM Manipulation",
+    "slug": "javascript-dom-fundamentals",
+    "difficulty": "beginner",
+    "order": 3,
+    "prerequisites": ["web-css-01"],
+    "plainExplanation": "JavaScript is the brain that makes webpages come alive. It runs right inside your web browser to respond when a user clicks a button, validates a form before submitting, fetches live data from servers, and updates the screen without reloading the page.",
+    "whyItMatters": "JavaScript is the only programming language built natively into every web browser on earth. Learning it unlocks frontend web development, backend Node.js servers, and cross-platform mobile apps.",
+    "learningObjectives": [
+      "Declare variables with const and let and understand primitive vs object types",
+      "Transform arrays cleanly using map, filter, and reduce",
+      "Respond to user interactions with event listeners and update the DOM safely"
+    ],
+    "estimatedLessonMins": 35,
+    "estimatedPracticeMins": 35,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Using == instead of === which causes surprising type coercion bugs like '5' == 5",
+      "Inserting untrusted user input with innerHTML instead of textContent (which creates XSS security bugs)"
+    ],
+    "resources": [
+      {
+        "title": "JavaScript.info — The Modern JavaScript Tutorial",
+        "url": "https://javascript.info/",
+        "provider": "JavaScript.info",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "MDN JavaScript First Steps",
+        "url": "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/First_steps",
+        "provider": "MDN Web Docs",
+        "resourceType": "documentation",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "JavaScript & DOM Mastery Check",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "Why should you prefer `textContent` over `innerHTML` when displaying text typed by a user?",
+          "options": [
+            "textContent prevents injected HTML/script tags from executing (blocking XSS attacks)",
+            "innerHTML does not work in modern browsers",
+            "textContent automatically translates text into other languages",
+            "innerHTML only works on numbers"
+          ],
+          "correctAnswer": "textContent prevents injected HTML/script tags from executing (blocking XSS attacks)",
+          "explanation": "textContent treats the value strictly as plain text, neutralizing malicious <script> tags.",
+          "order": 1
+        },
+        {
+          "questionType": "code_output",
+          "prompt": "What does `[1, 2, 3, 4].filter(n => n % 2 === 0)` return?",
+          "codeSnippet": "const evens = [1, 2, 3, 4].filter(n => n % 2 === 0);",
+          "options": ["[1, 3]", "[2, 4]", "[2, 4, 6, 8]", "2"],
+          "correctAnswer": "[2, 4]",
+          "explanation": "filter keeps only elements where the callback returns true — here, even numbers whose remainder mod 2 is 0.",
+          "order": 2
+        }
+      ]
+    },
+    "codingChallenge": {
+      "title": "Filter & Format Completed Tasks",
+      "instructions": "Write a JavaScript function `getActiveTitles(tasks)` where `tasks` is an array of `{ title: string, done: boolean }`. Return an array of the `title` strings for tasks where `done === false`.",
+      "starterCode": "function getActiveTitles(tasks) {\n  // Filter incomplete tasks and return their titles\n  return [];\n}",
+      "language": "javascript",
+      "visibleTests": [
+        { "input": "getActiveTitles([{title:'Study HTML',done:true},{title:'Build JS',done:false}])", "expected": "[\"Build JS\"]", "description": "Returns only incomplete task titles" },
+        { "input": "getActiveTitles([{title:'A',done:false},{title:'B',done:false}])", "expected": "[\"A\",\"B\"]", "description": "Preserves order of active tasks" }
+      ],
+      "hiddenTests": [
+        { "input": "getActiveTitles([{title:'Done',done:true}])", "expected": "[]", "description": "Returns empty array when all tasks are done" }
+      ],
+      "solutionHint": "Chain `.filter(t => !t.done).map(t => t.title)`."
+    }
+  },
+  {
+    "id": "web-react-01",
+    "track": "web",
+    "subjectId": "subj-web-dev",
+    "moduleId": "mod-web-frameworks",
+    "moduleTitle": "Modern Frontend Architecture: React & TypeScript",
+    "title": "Component-Driven UI: Props, State & Unidirectional Data Flow",
+    "slug": "react-components-state",
+    "difficulty": "intermediate",
+    "order": 4,
+    "prerequisites": ["web-js-01"],
+    "plainExplanation": "Imagine building a complex dashboard with LEGO bricks instead of carving it from one giant block of wood. React lets you break your user interface into reusable components (like Navbar, LessonCard, QuizModal). When your data (State) changes, React automatically updates only the exact parts of the screen that depend on it.",
+    "whyItMatters": "Modern web apps manage hundreds of interactive states simultaneously. Component architecture with TypeScript prevents UI desynchronization bugs and powers most production web applications today.",
+    "learningObjectives": [
+      "Think in components: split UI into clean, single-responsibility building blocks",
+      "Pass read-only data down via props and manage interactive changes with state",
+      "Update arrays and objects immutably so React detects state changes reliably"
+    ],
+    "estimatedLessonMins": 35,
+    "estimatedPracticeMins": 40,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Mutating state arrays directly with state.push(item) instead of creating a new array [...state, item]",
+      "Putting derived values into redundant state instead of computing them during render"
+    ],
+    "resources": [
+      {
+        "title": "Official React Learn Documentation",
+        "url": "https://react.dev/learn",
+        "provider": "React.dev",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "TypeScript Handbook for Beginners",
+        "url": "https://www.typescriptlang.org/docs/handbook/intro.html",
+        "provider": "TypeScript Official",
+        "resourceType": "documentation",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "React State & Immutability Verification",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "Why should you avoid calling `items.push(newItem)` directly on a React state array?",
+          "options": [
+            "JavaScript arrays do not have a push method",
+            "Mutating the existing array keeps the same object reference, so React may skip re-rendering",
+            "push() deletes the previous elements",
+            "React only supports strings in state"
+          ],
+          "correctAnswer": "Mutating the existing array keeps the same object reference, so React may skip re-rendering",
+          "explanation": "React compares state references with Object.is(). Creating a new array `[...items, newItem]` guarantees a new reference and triggers a clean UI update.",
+          "order": 1
+        },
+        {
+          "questionType": "mcq",
+          "prompt": "What is the key difference between props and state in React?",
+          "options": [
+            "Props are passed into a component from its parent (read-only); state is managed internally by the component",
+            "Props can only hold numbers; state can only hold booleans",
+            "State is shared across all users on the internet; props are private",
+            "There is no difference"
+          ],
+          "correctAnswer": "Props are passed into a component from its parent (read-only); state is managed internally by the component",
+          "explanation": "Props flow downward from parent to child like function arguments, while state represents data that changes over time inside a component.",
+          "order": 2
+        }
+      ]
+    },
+    "codingChallenge": {
+      "title": "Immutable Lesson Toggle Reducer",
+      "instructions": "Write a pure JavaScript function `toggleLesson(lessons, targetId)` that takes an array of `{ id: string, completed: boolean }` and returns a NEW array with `completed` flipped only for the lesson matching `targetId`, without mutating the original objects.",
+      "starterCode": "function toggleLesson(lessons, targetId) {\n  // Return a new array with targetId's completed boolean flipped\n  return lessons;\n}",
+      "language": "javascript",
+      "visibleTests": [
+        { "input": "toggleLesson([{id:'l1',completed:false},{id:'l2',completed:true}], 'l1')", "expected": "[{\"id\":\"l1\",\"completed\":true},{\"id\":\"l2\",\"completed\":true}]", "description": "Flips l1 from false to true" }
+      ],
+      "hiddenTests": [
+        { "input": "toggleLesson([{id:'a',completed:true}], 'a')", "expected": "[{\"id\":\"a\",\"completed\":false}]", "description": "Flips true back to false" }
+      ],
+      "solutionHint": "Use `lessons.map(l => l.id === targetId ? { ...l, completed: !l.completed } : l)`."
+    }
+  },
+  {
+    "id": "mob-ui-01",
+    "track": "mobile",
+    "subjectId": "subj-mobile-dev",
+    "moduleId": "mod-mobile-core",
+    "moduleTitle": "Mobile App Engineering: Touch UX & Cross-Platform Architecture",
+    "title": "Mobile-First Layouts, Touch Targets & Screen Navigation",
+    "slug": "mobile-layouts-navigation",
+    "difficulty": "beginner",
+    "order": 1,
+    "prerequisites": ["web-js-01"],
+    "plainExplanation": "Mobile apps are used with thumbs on small vertical screens while people walk or commute. Unlike desktop websites with mouse cursors and hover states, mobile apps rely on stack navigation (pushing/popping screens), bottom tab bars, large 44px touch targets, and smooth 60fps gestures.",
+    "whyItMatters": "Over half of global internet traffic happens on smartphones. Understanding mobile navigation stacks, safe areas (notches), and touch ergonomics applies across React Native, Flutter, SwiftUI, and Kotlin Compose.",
+    "learningObjectives": [
+      "Design thumb-friendly layouts with safe area insets and minimum 44x44px touch targets",
+      "Model app navigation using Stack, Tab, and Modal navigators",
+      "Handle offline-first local storage and network reconnection gracefully"
+    ],
+    "estimatedLessonMins": 30,
+    "estimatedPracticeMins": 30,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Placing primary buttons too close to screen notches or bottom home indicator bars",
+      "Designing hover-only interactions that do not exist on touchscreens"
+    ],
+    "resources": [
+      {
+        "title": "React Native Core Concepts Guide",
+        "url": "https://reactnative.dev/docs/getting-started",
+        "provider": "React Native Official",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "Flutter Architectural Overview",
+        "url": "https://docs.flutter.dev/resources/architectural-overview",
+        "provider": "Google Flutter",
+        "resourceType": "documentation",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "Mobile UI & Navigation Architecture Check",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "How does a Stack Navigator behave when a user taps a list item and then taps Back?",
+          "options": [
+            "It pushes the detail screen onto the top of the stack, and pops it off when going back",
+            "It deletes the previous screen from memory permanently",
+            "It reloads the entire phone operating system",
+            "It opens a desktop browser window"
+          ],
+          "correctAnswer": "It pushes the detail screen onto the top of the stack, and pops it off when going back",
+          "explanation": "Stack navigation follows LIFO (Last-In, First-Out), preserving scroll position and state of previous screens.",
+          "order": 1
+        },
+        {
+          "questionType": "mcq",
+          "prompt": "Why is Safe Area padding critical in mobile app layouts?",
+          "options": [
+            "It prevents content and buttons from being hidden under camera notches, status bars, and bottom gesture handles",
+            "It encrypts user passwords automatically",
+            "It doubles battery life",
+            "It converts iOS apps into Android apps"
+          ],
+          "correctAnswer": "It prevents content and buttons from being hidden under camera notches, status bars, and bottom gesture handles",
+          "explanation": "Modern phones have rounded corners, Dynamic Islands/notches, and home indicators that obscure edge-to-edge elements if safe area insets are ignored.",
+          "order": 2
+        }
+      ]
+    },
+    "codingChallenge": {
+      "title": "Implement a Mobile Screen Navigation Stack",
+      "instructions": "Write a JavaScript function `applyNavigation(initialStack, actions)` where `actions` is an array of `{ type: 'PUSH', screen: string }` or `{ type: 'POP' }`. POP should never remove the last remaining root screen. Return the resulting stack array.",
+      "starterCode": "function applyNavigation(initialStack, actions) {\n  const stack = [...initialStack];\n  // Process PUSH and POP actions safely\n  return stack;\n}",
+      "language": "javascript",
+      "visibleTests": [
+        { "input": "applyNavigation(['Home'], [{type:'PUSH',screen:'Course'},{type:'PUSH',screen:'Lesson'},{type:'POP'}])", "expected": "[\"Home\",\"Course\"]", "description": "Pushes two screens and pops the top screen" },
+        { "input": "applyNavigation(['Home'], [{type:'POP'}])", "expected": "[\"Home\"]", "description": "Never pops the root screen" }
+      ],
+      "hiddenTests": [
+        { "input": "applyNavigation(['Home'], [{type:'PUSH',screen:'Profile'}])", "expected": "[\"Home\",\"Profile\"]", "description": "Handles single push" }
+      ],
+      "solutionHint": "Loop over `actions`: if `a.type === 'PUSH'` push `a.screen`; if `a.type === 'POP' && stack.length > 1` call `stack.pop()`."
+    }
+  }
+]

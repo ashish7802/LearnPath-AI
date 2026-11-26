@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import {
   X,
   ShieldCheck,
   AlertCircle,
   CheckCircle2,
-  HelpCircle,
   ArrowRight,
   RotateCcw
 } from 'lucide-react';
@@ -31,6 +31,7 @@ export default function AssessmentModal({
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<any>(null);
+  const [authError, setAuthError] = useState('');
 
   const handleSelectOption = (order: number, val: string) => {
     setAnswers((prev) => ({ ...prev, [order]: val }));
@@ -38,6 +39,7 @@ export default function AssessmentModal({
 
   const handleSubmit = async () => {
     setSubmitting(true);
+    setAuthError('');
     try {
       const payload = questions.map((q) => ({
         order: q.order,
@@ -52,12 +54,21 @@ export default function AssessmentModal({
       });
 
       const data = await res.json();
+      if (!res.ok) {
+        setAuthError(
+          res.status === 401
+            ? 'Please sign in to save your mastery verification and unlock downstream skills.'
+            : data.error || 'Could not submit assessment.'
+        );
+        return;
+      }
+
       setResult(data);
       if (data.mastered) {
         onSuccess();
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
+      setAuthError('Network error while grading assessment. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -65,21 +76,29 @@ export default function AssessmentModal({
 
   const handleReset = () => {
     setResult(null);
+    setAuthError('');
     setAnswers({});
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Skill Verification Assessment: ${topicTitle}`}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto"
+    >
+      <div className="bg-[#111827] border border-slate-800 rounded-xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
         {/* Modal Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/70">
           <div className="space-y-0.5">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-semibold">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-blue-400 font-semibold">
               Skill Verification Assessment
             </span>
-            <h2 className="text-base font-bold text-white">{topicTitle}</h2>
+            <h2 className="font-display text-base font-bold text-slate-50">{topicTitle}</h2>
           </div>
           <button
+            type="button"
+            aria-label="Close assessment"
             onClick={onClose}
             className="p-1.5 rounded-lg border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800"
           >
@@ -89,8 +108,22 @@ export default function AssessmentModal({
 
         {/* Modal Body */}
         <div className="p-6 overflow-y-auto space-y-6 flex-1">
+          {authError && (
+            <div className="p-4 rounded-lg bg-rose-500/10 border border-rose-500/25 text-rose-200 text-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <span className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                {authError}
+              </span>
+              <Link
+                href="/login"
+                className="px-3 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 text-white font-medium whitespace-nowrap self-start sm:self-auto"
+              >
+                Sign In
+              </Link>
+            </div>
+          )}
+
           {result ? (
-            /* Result View */
             <div className="space-y-6">
               <div
                 className={`p-6 rounded-xl border text-center space-y-2 ${
@@ -99,26 +132,25 @@ export default function AssessmentModal({
                     : 'border-rose-500/30 bg-rose-500/10 text-rose-300'
                 }`}
               >
-                <div className="w-12 h-12 rounded-full mx-auto flex items-center justify-center bg-slate-950/40">
+                <div className="w-12 h-12 rounded-full mx-auto flex items-center justify-center bg-slate-950/50">
                   {result.mastered ? (
                     <ShieldCheck className="w-6 h-6 text-emerald-400" />
                   ) : (
                     <AlertCircle className="w-6 h-6 text-rose-400" />
                   )}
                 </div>
-                <h3 className="text-lg font-bold text-white">
-                  {result.mastered ? 'Verified Skill Mastery Achieved!' : 'Mastery Threshold Not Reached'}
+                <h3 className="font-display text-lg font-bold text-slate-50">
+                  {result.mastered ? 'Verified Skill Mastery Achieved' : 'Mastery Threshold Not Reached'}
                 </h3>
-                <div className="text-3xl font-extrabold font-mono py-1">
+                <div className="text-3xl font-extrabold font-mono py-1 tabular-nums text-slate-50">
                   {result.evaluation?.score}%{' '}
-                  <span className="text-xs font-normal text-slate-400">
+                  <span className="text-xs font-normal text-slate-300">
                     (Required: {passingScore}%)
                   </span>
                 </div>
-                <p className="text-xs max-w-md mx-auto text-slate-300">{result.message}</p>
+                <p className="text-xs max-w-md mx-auto text-slate-200">{result.message}</p>
               </div>
 
-              {/* Detailed Breakdown */}
               <div className="space-y-3">
                 <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">
                   Question Breakdown &amp; Explanations
@@ -128,26 +160,24 @@ export default function AssessmentModal({
                     key={idx}
                     className={`p-4 rounded-xl border text-xs space-y-2 ${
                       fb.isCorrect
-                        ? 'border-emerald-500/20 bg-slate-950/60'
-                        : 'border-rose-500/20 bg-slate-950/60'
+                        ? 'border-emerald-500/25 bg-slate-950/60'
+                        : 'border-rose-500/25 bg-slate-950/60'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <span className="font-semibold text-slate-200">
+                      <span className="font-semibold text-slate-100">
                         {idx + 1}. {fb.prompt}
                       </span>
                       <span
-                        className={`font-mono text-[10px] px-2 py-0.5 rounded font-bold ${
-                          fb.isCorrect
-                            ? 'bg-emerald-500/20 text-emerald-400'
-                            : 'bg-rose-500/20 text-rose-400'
+                        className={`font-mono text-[11px] font-semibold shrink-0 ${
+                          fb.isCorrect ? 'text-emerald-400' : 'text-rose-400'
                         }`}
                       >
                         {fb.isCorrect ? 'CORRECT' : 'INCORRECT'}
                       </span>
                     </div>
 
-                    <div className="text-slate-400 pt-1">
+                    <div className="text-slate-300 pt-1">
                       <span className="text-slate-500">Your Answer:</span> {fb.userAnswer}
                     </div>
 
@@ -157,8 +187,8 @@ export default function AssessmentModal({
                       </div>
                     )}
 
-                    <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 text-[11px] mt-2">
-                      <span className="font-semibold text-indigo-400">Why: </span>
+                    <div className="p-2.5 rounded-lg bg-[#111827] border border-slate-800 text-slate-300 text-xs mt-2">
+                      <span className="font-semibold text-blue-400">Why: </span>
                       {fb.explanation}
                     </div>
                   </div>
@@ -166,19 +196,18 @@ export default function AssessmentModal({
               </div>
             </div>
           ) : (
-            /* Questions Form */
-            <div className="space-y-6">
+            <div className="space-y-5">
               {questions.map((q, idx) => (
-                <div key={q.order} className="p-4 rounded-xl border border-slate-800 bg-slate-950/50 space-y-3">
-                  <div className="flex items-start gap-2">
-                    <span className="w-5 h-5 rounded bg-indigo-600/20 text-indigo-400 font-mono text-xs font-bold flex items-center justify-center shrink-0 mt-0.5 border border-indigo-500/30">
+                <div key={q.order} className="p-4 rounded-xl border border-slate-800 bg-slate-950/60 space-y-3">
+                  <div className="flex items-start gap-2.5">
+                    <span className="w-5 h-5 rounded bg-blue-600/20 text-blue-400 font-mono text-xs font-bold flex items-center justify-center shrink-0 mt-0.5 border border-blue-500/30 tabular-nums">
                       {idx + 1}
                     </span>
-                    <p className="text-xs sm:text-sm font-medium text-slate-200">{q.prompt}</p>
+                    <p className="text-xs sm:text-sm font-medium text-slate-100">{q.prompt}</p>
                   </div>
 
                   {q.codeSnippet && (
-                    <pre className="p-3 rounded-lg bg-slate-900 border border-slate-800 text-indigo-300 font-mono text-xs overflow-x-auto">
+                    <pre className="p-3 rounded-lg bg-[#0B1120] border border-slate-800 text-blue-200 font-mono text-xs overflow-x-auto">
                       <code>{q.codeSnippet}</code>
                     </pre>
                   )}
@@ -194,12 +223,12 @@ export default function AssessmentModal({
                             onClick={() => handleSelectOption(q.order, opt)}
                             className={`w-full p-2.5 rounded-lg border text-left text-xs transition-colors flex items-center justify-between ${
                               selected
-                                ? 'border-indigo-500 bg-indigo-500/15 text-indigo-200'
-                                : 'border-slate-800 bg-slate-900/40 text-slate-400 hover:border-slate-700'
+                                ? 'border-blue-500 bg-blue-500/15 text-blue-100'
+                                : 'border-slate-800 bg-slate-900/50 text-slate-300 hover:border-slate-700'
                             }`}
                           >
                             <span>{opt}</span>
-                            {selected && <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400 shrink-0" />}
+                            {selected && <CheckCircle2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />}
                           </button>
                         );
                       })}
@@ -211,7 +240,7 @@ export default function AssessmentModal({
                         value={answers[q.order] || ''}
                         onChange={(e) => handleSelectOption(q.order, e.target.value)}
                         placeholder="Write your explanation in plain English or Hinglish..."
-                        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
                       />
                     </div>
                   )}
@@ -223,8 +252,8 @@ export default function AssessmentModal({
 
         {/* Modal Footer */}
         <div className="p-4 border-t border-slate-800 bg-slate-950/80 flex items-center justify-between">
-          <span className="text-[11px] text-slate-500">
-            Passing score: <span className="text-slate-300 font-mono">{passingScore}%</span>
+          <span className="text-xs text-slate-400">
+            Passing score: <span className="text-slate-100 font-mono tabular-nums">{passingScore}%</span>
           </span>
 
           {result ? (
@@ -232,14 +261,14 @@ export default function AssessmentModal({
               <button
                 type="button"
                 onClick={handleReset}
-                className="px-4 py-2 rounded-lg border border-slate-700 hover:border-slate-600 text-xs font-semibold text-slate-300 flex items-center gap-1.5"
+                className="px-4 py-2 rounded-lg border border-slate-700 hover:border-slate-600 text-xs font-semibold text-slate-200 flex items-center gap-1.5"
               >
                 <RotateCcw className="w-3.5 h-3.5" /> Retake
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold"
+                className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold"
               >
                 Done
               </button>
@@ -249,9 +278,9 @@ export default function AssessmentModal({
               type="button"
               disabled={submitting || Object.keys(answers).length === 0}
               onClick={handleSubmit}
-              className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-2 disabled:opacity-50 transition-colors"
+              className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-2 disabled:opacity-50 transition-colors"
             >
-              {submitting ? 'Verifying Answers...' : 'Submit Assessment'}
+              <span>{submitting ? 'Verifying Answers...' : 'Submit Assessment'}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           )}

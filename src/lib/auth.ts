@@ -1,22 +1,25 @@
 import { SignJWT, jwtVerify } from 'jose';
 import bcrypt from 'bcryptjs';
+import crypto from 'node:crypto';
+import type { NextRequest } from 'next/server';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-// Strict secret verification: in production, fail immediately if JWT_SECRET is unset
+// Ephemeral runtime fallback secret when JWT_SECRET is not configured in local development
+const globalForAuth = globalThis as unknown as { __lpDevJwtSecret?: string };
+
 function getJwtSecret(): Uint8Array {
   const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    if (isProduction) {
-      throw new Error('FATAL: JWT_SECRET environment variable is missing in production.');
+  if (secret && secret.trim().length > 0) {
+    if (secret.length < 32 && isProduction) {
+      throw new Error('FATAL: JWT_SECRET must be at least 32 characters long in production.');
     }
-    console.warn('⚠️ WARNING: Using fallback JWT secret for development only. Set JWT_SECRET in production.');
-    return new TextEncoder().encode('learnpath-ai-dev-insecure-secret-key-32-chars-min');
+    return new TextEncoder().encode(secret);
   }
-  if (secret.length < 32 && isProduction) {
-    throw new Error('FATAL: JWT_SECRET must be at least 32 characters long in production.');
+  if (!globalForAuth.__lpDevJwtSecret) {
+    globalForAuth.__lpDevJwtSecret = crypto.randomBytes(32).toString('hex');
   }
-  return new TextEncoder().encode(secret);
+  return new TextEncoder().encode(globalForAuth.__lpDevJwtSecret);
 }
 
 export interface AuthSessionUser {
@@ -58,10 +61,25 @@ export async function verifySessionToken(token: string): Promise<AuthSessionUser
   }
 }
 
-export function getSessionCookieOptions() {
+export function getSessionCookieOptions(req?: NextRequest) {
+  const isHttps =
+    req?.headers.get('x-forwarded-proto') === 'https' ||
+    req?.nextUrl?.protocol === 'https:';
+
+  if (isHttps) {
+    return {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none' as const,
+      partitioned: true,
+      path: '/',
+      maxAge: 7 * 24 * 60 * 60,
+    };
+  }
+
   return {
     httpOnly: true,
-    secure: isProduction,
+    secure: false,
     sameSite: 'lax' as const,
     path: '/',
     maxAge: 7 * 24 * 60 * 60,

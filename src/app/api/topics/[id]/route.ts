@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getTopicById, computeTopicLockStatus } from '@/lib/curriculum';
 import { verifySessionToken } from '@/lib/auth';
 import prisma from '@/lib/prisma';
+import { learningProgressStore } from '@/lib/local-store';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -14,6 +17,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     let userId: string | null = null;
     let progress: any = null;
     const masteredTopicIds = new Set<string>();
+    let completedMicroLessonIds: string[] = [];
 
     if (token) {
       const session = await verifySessionToken(token);
@@ -24,39 +28,44 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
           if (p.status === 'MASTERED') masteredTopicIds.add(p.topicId);
           if (p.topicId === topic.id) progress = p;
         }
+        completedMicroLessonIds = learningProgressStore
+          .getMicroLessons(userId)
+          .filter((m) => m.topicId === topic.id)
+          .map((m) => m.microLessonId);
       }
     }
 
     const { isLocked, missingPrereqs } = computeTopicLockStatus(topic, masteredTopicIds);
 
-    // Sanitize assessment to not leak correct answers to the client before submission
     const sanitizedQuestions = topic.assessment.questions.map((q) => ({
       id: q.id,
       order: q.order,
       questionType: q.questionType,
       prompt: q.prompt,
       codeSnippet: q.codeSnippet,
-      options: q.options
+      options: q.options,
     }));
 
     return NextResponse.json({
       ...topic,
+      authenticated: !!userId,
       isLocked,
       missingPrereqs,
+      completedMicroLessonIds,
       userProgress: progress
         ? {
             status: progress.status,
             bestScore: progress.bestScore,
             attemptsCount: progress.attemptsCount,
-            masteredAt: progress.masteredAt
+            masteredAt: progress.masteredAt,
           }
         : { status: 'NOT_STARTED', bestScore: null, attemptsCount: 0 },
       assessment: {
         title: topic.assessment.title,
         passingScore: topic.assessment.passingScore,
         questionsCount: topic.assessment.questions.length,
-        questions: sanitizedQuestions
-      }
+        questions: sanitizedQuestions,
+      },
     });
   } catch (error) {
     console.error('Topic detail API error:', error);

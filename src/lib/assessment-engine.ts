@@ -120,54 +120,12 @@ export interface CodeChallengeResult {
   outputLog: string;
 }
 
-// Client-safe deterministic Python simulator & syntax evaluator
+import { executeCodeChallengeSafely } from './code-sandbox';
+
+// Safe isolated deterministic code evaluator (JavaScript & Python)
 export function evaluatePythonChallenge(
   challenge: CodingChallenge,
   submittedCode: string
 ): CodeChallengeResult {
-  const visibleResults: CodeExecutionTestCaseResult[] = [];
-  const hiddenResults: CodeExecutionTestCaseResult[] = [];
-  let testsPassed = 0;
-
-  // Basic sanity check: code cannot be blank or simply 'pass'
-  const trimmed = submittedCode.replace(/#.*$/gm, '').trim();
-  const isStub = trimmed.endsWith('pass') && trimmed.split('\n').length <= 3;
-
-  for (const test of challenge.visibleTests) {
-    const passed = !isStub && submittedCode.includes('return');
-    if (passed) testsPassed++;
-    visibleResults.push({
-      input: test.input,
-      expected: test.expected,
-      actual: passed ? test.expected : 'None (Incomplete implementation)',
-      passed,
-      description: test.description
-    });
-  }
-
-  for (const test of challenge.hiddenTests) {
-    const passed = !isStub && submittedCode.includes('return');
-    if (passed) testsPassed++;
-    hiddenResults.push({
-      input: test.input,
-      expected: test.expected,
-      actual: passed ? test.expected : 'None (Incomplete implementation)',
-      passed,
-      description: test.description
-    });
-  }
-
-  const total = challenge.visibleTests.length + challenge.hiddenTests.length;
-  const passedAll = testsPassed === total;
-
-  return {
-    passed: passedAll,
-    testsPassed,
-    testsTotal: total,
-    visibleResults,
-    hiddenResults,
-    outputLog: passedAll
-      ? `All ${total} test cases passed successfully! Memory limit: <50MB, CPU time: 42ms.`
-      : `Test suite execution failed: ${total - testsPassed} test(s) failed.`
-  };
+  return executeCodeChallengeSafely(challenge, submittedCode);
 }

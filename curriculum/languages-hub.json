@@ -1,0 +1,281 @@
+[
+  {
+    "id": "lang-c-01",
+    "track": "languages",
+    "subjectId": "subj-programming-core",
+    "moduleId": "mod-lang-systems",
+    "moduleTitle": "Programming Languages Hub: Systems, Enterprise & Modern Languages",
+    "title": "C & Memory Fundamentals: Types, Pointers & Stack vs Heap",
+    "slug": "c-memory-fundamentals",
+    "difficulty": "intermediate",
+    "order": 1,
+    "prerequisites": ["comp-101", "py-foundations-02"],
+    "plainExplanation": "C is the foundational language underneath Linux, Windows, Python, and databases. Unlike Python which hides memory addresses from you, C lets you look directly at numbered mailboxes in RAM using Pointers — variables that store the memory address of another variable.",
+    "whyItMatters": "Even if you write Python or JavaScript daily, understanding C's stack vs heap memory explains why programs crash, how garbage collectors work, and how high-performance systems stay fast.",
+    "learningObjectives": [
+      "Understand static typing and why C must compile to machine code before running",
+      "Explain what a pointer holds (a memory address) and how dereferencing accesses the value",
+      "Contrast fast automatic Stack memory with flexible dynamic Heap memory"
+    ],
+    "estimatedLessonMins": 35,
+    "estimatedPracticeMins": 30,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Forgetting to free heap memory allocated with malloc(), causing memory leaks",
+      "Reading past the end of an array (buffer overflow), which causes crashes and security holes"
+    ],
+    "resources": [
+      {
+        "title": "Harvard CS50 — Week 1 & Week 4 (C & Memory)",
+        "url": "https://cs50.harvard.edu/x/2026/weeks/4/",
+        "provider": "Harvard CS50",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "Beej's Guide to C Programming",
+        "url": "https://beej.us/guide/bgc/",
+        "provider": "Beej's Guides",
+        "resourceType": "tutorial",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "C & Memory Model Verification",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "What does a pointer variable store in C?",
+          "options": [
+            "The memory address where another value lives in RAM",
+            "Only text strings",
+            "A webpage URL",
+            "The name of the source code file"
+          ],
+          "correctAnswer": "The memory address where another value lives in RAM",
+          "explanation": "A pointer holds a numeric RAM address (like 0x7ffe...), allowing direct efficient access to data without copying it.",
+          "order": 1
+        },
+        {
+          "questionType": "mcq",
+          "prompt": "What happens if a C program repeatedly allocates Heap memory with malloc() and never calls free()?",
+          "options": [
+            "A memory leak occurs, gradually consuming available RAM",
+            "The program becomes faster",
+            "The CPU automatically compresses the memory to zero bytes",
+            "Nothing — C has an automatic garbage collector"
+          ],
+          "correctAnswer": "A memory leak occurs, gradually consuming available RAM",
+          "explanation": "C uses manual memory management on the heap; unfreed allocations remain occupied until the process exits.",
+          "order": 2
+        }
+      ]
+    },
+    "codingChallenge": {
+      "title": "Simulate a Bounded Memory Buffer",
+      "instructions": "Write a JavaScript function `safeWrite(bufferSize, index, value)` that prevents buffer overflows. If `index >= 0 && index < bufferSize`, return `'OK:' + index + '=' + value`. Otherwise return `'SEGFAULT'`.",
+      "starterCode": "function safeWrite(bufferSize, index, value) {\n  // Check bounds before writing to memory\n  return 'SEGFAULT';\n}",
+      "language": "javascript",
+      "visibleTests": [
+        { "input": "safeWrite(4, 2, 99)", "expected": "OK:2=99", "description": "Valid in-bounds index succeeds" },
+        { "input": "safeWrite(4, 4, 99)", "expected": "SEGFAULT", "description": "Index equal to size is out of bounds" }
+      ],
+      "hiddenTests": [
+        { "input": "safeWrite(4, -1, 10)", "expected": "SEGFAULT", "description": "Negative index is rejected" }
+      ],
+      "solutionHint": "Check `if (index >= 0 && index < bufferSize) return 'OK:' + index + '=' + value;`."
+    }
+  },
+  {
+    "id": "lang-java-01",
+    "track": "languages",
+    "subjectId": "subj-programming-core",
+    "moduleId": "mod-lang-systems",
+    "moduleTitle": "Programming Languages Hub: Systems, Enterprise & Modern Languages",
+    "title": "Java & Object-Oriented Programming: Classes, Encapsulation & Interfaces",
+    "slug": "java-oop-fundamentals",
+    "difficulty": "beginner",
+    "order": 2,
+    "prerequisites": ["py-foundations-03"],
+    "plainExplanation": "Object-Oriented Programming (OOP) organizes code around real-world blueprints called Classes. A Class like `BankAccount` defines both the data (balance) and the safe actions (deposit, withdraw) that work on it. Encapsulation locks the balance so outside code cannot set balance = -1,000,000 directly.",
+    "whyItMatters": "Java powers banking backends, Android apps, and large enterprise systems. Mastering classes, encapsulation, and interfaces transfers cleanly to C#, TypeScript, Kotlin, and Python.",
+    "learningObjectives": [
+      "Explain the difference between a Class (blueprint) and an Object (living instance)",
+      "Protect internal state using encapsulation (private fields + validated methods)",
+      "Design flexible software contracts using Interfaces instead of rigid inheritance"
+    ],
+    "estimatedLessonMins": 35,
+    "estimatedPracticeMins": 30,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Making every field public, which lets any code corrupt internal invariants",
+      "Building deep 6-level inheritance chains instead of composing small interfaces"
+    ],
+    "resources": [
+      {
+        "title": "University of Helsinki: Java Programming MOOC",
+        "url": "https://java-programming.mooc.fi/",
+        "provider": "University of Helsinki",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "Dev.java Official Tutorials",
+        "url": "https://dev.java/learn/",
+        "provider": "Oracle Dev.java",
+        "resourceType": "documentation",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "Object-Oriented Programming & Java Check",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "What is the main benefit of Encapsulation in Object-Oriented Programming?",
+          "options": [
+            "Hiding internal state and enforcing validation rules through controlled methods",
+            "Deleting all variables from memory",
+            "Making code run without a compiler",
+            "Allowing any file to overwrite private data"
+          ],
+          "correctAnswer": "Hiding internal state and enforcing validation rules through controlled methods",
+          "explanation": "Encapsulation ensures invariants (like a bank balance never going below zero) are enforced in one place.",
+          "order": 1
+        },
+        {
+          "questionType": "mcq",
+          "prompt": "How is a Class related to an Object?",
+          "options": [
+            "A Class is the blueprint; an Object is a concrete instance created from that blueprint",
+            "An Object is the blueprint; a Class is the copy",
+            "They are unrelated concepts",
+            "Classes only exist in HTML"
+          ],
+          "correctAnswer": "A Class is the blueprint; an Object is a concrete instance created from that blueprint",
+          "explanation": "Just as one house blueprint can build 50 distinct houses, one Class can instantiate many independent Objects.",
+          "order": 2
+        }
+      ]
+    },
+    "codingChallenge": {
+      "title": "Encapsulated Wallet Transactions",
+      "instructions": "Write a JavaScript function `processWallet(initialBalance, transactions)` where each transaction is `{ type: 'deposit' | 'withdraw', amount: number }`. Ignore invalid amounts (<= 0) and ignore withdrawals that exceed the current balance. Return the final balance.",
+      "starterCode": "function processWallet(initialBalance, transactions) {\n  let balance = initialBalance;\n  // Apply valid deposits and withdrawals safely\n  return balance;\n}",
+      "language": "javascript",
+      "visibleTests": [
+        { "input": "processWallet(100, [{type:'deposit',amount:50},{type:'withdraw',amount:30}])", "expected": "120", "description": "Applies valid deposit and withdrawal" },
+        { "input": "processWallet(50, [{type:'withdraw',amount:80},{type:'deposit',amount:-10}])", "expected": "50", "description": "Rejects overdraft and negative deposit" }
+      ],
+      "hiddenTests": [
+        { "input": "processWallet(20, [{type:'withdraw',amount:20}])", "expected": "0", "description": "Allows withdrawing exact remaining balance" }
+      ],
+      "solutionHint": "Check `tx.amount > 0` first. For `'deposit'`, add `tx.amount`. For `'withdraw'`, subtract only if `tx.amount <= balance`."
+    }
+  },
+  {
+    "id": "lang-go-rust-01",
+    "track": "languages",
+    "subjectId": "subj-programming-core",
+    "moduleId": "mod-lang-systems",
+    "moduleTitle": "Programming Languages Hub: Systems, Enterprise & Modern Languages",
+    "title": "Modern Backend & Systems Languages: Go Concurrency & Rust Safety",
+    "slug": "go-rust-modern-systems",
+    "difficulty": "advanced",
+    "order": 3,
+    "prerequisites": ["lang-c-01", "swe-api-01"],
+    "plainExplanation": "Modern cloud software needs speed AND safety. Go (created at Google) makes handling thousands of simultaneous network requests simple with lightweight Goroutines and Channels (like passing notes through a pipe). Rust achieves C-level speed without memory leaks or crashes using Ownership rules checked at compile time.",
+    "whyItMatters": "Docker, Kubernetes, high-throughput APIs, and modern developer tools (like ripgrep and SWC) are built in Go and Rust. Learning their core mental models prepares you for senior systems and cloud engineering.",
+    "learningObjectives": [
+      "Understand concurrency vs parallelism and message passing via channels in Go",
+      "Explain Rust's Ownership & Borrowing rules in plain English",
+      "Choose the right language for a project (Python vs JS/TS vs Go vs Rust)"
+    ],
+    "estimatedLessonMins": 35,
+    "estimatedPracticeMins": 30,
+    "assessmentType": "comprehensive",
+    "masteryThreshold": 80,
+    "commonMistakes": [
+      "Assuming concurrency means running on multiple CPU cores simultaneously (concurrency is structure; parallelism is simultaneous execution)",
+      "Sharing mutable state across threads without locks or channels, causing race conditions"
+    ],
+    "resources": [
+      {
+        "title": "A Tour of Go (Interactive Official Guide)",
+        "url": "https://go.dev/tour/welcome/1",
+        "provider": "Go Official",
+        "resourceType": "primary-free",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      },
+      {
+        "title": "The Rust Programming Language Book",
+        "url": "https://doc.rust-lang.org/book/",
+        "provider": "Rust Official",
+        "resourceType": "documentation",
+        "language": "en",
+        "isFree": true,
+        "verifiedAt": "2026-03"
+      }
+    ],
+    "assessment": {
+      "title": "Go Concurrency & Rust Ownership Check",
+      "passingScore": 80,
+      "questions": [
+        {
+          "questionType": "mcq",
+          "prompt": "What problem does Rust's Ownership model solve at compile time?",
+          "options": [
+            "Prevents memory leaks, use-after-free bugs, and data races without needing a runtime garbage collector",
+            "Automatically designs CSS layouts",
+            "Eliminates the need for HTTP",
+            "Replaces SQL databases"
+          ],
+          "correctAnswer": "Prevents memory leaks, use-after-free bugs, and data races without needing a runtime garbage collector",
+          "explanation": "By tracking exactly which variable owns each piece of memory at compile time, Rust frees memory deterministically and prevents dangling pointers.",
+          "order": 1
+        },
+        {
+          "questionType": "mcq",
+          "prompt": "What is Go's core proverb about safe concurrency?",
+          "options": [
+            "Do not communicate by sharing memory; instead, share memory by communicating (using channels)",
+            "Always use global variables for every goroutine",
+            "Never handle errors",
+            "Run only one function per computer"
+          ],
+          "correctAnswer": "Do not communicate by sharing memory; instead, share memory by communicating (using channels)",
+          "explanation": "Passing data through channels ensures only one goroutine owns the value at a time, avoiding subtle race conditions.",
+          "order": 2
+        }
+      ]
+    },
+    "codingChallenge": {
+      "title": "Simulate a Bounded Worker Queue",
+      "instructions": "Write a JavaScript function `batchJobs(jobs, workerCount)` that splits an array of job names into `workerCount` round-robin worker buckets (arrays). Example: `batchJobs(['a','b','c'], 2)` -> `[['a','c'], ['b']]`.",
+      "starterCode": "function batchJobs(jobs, workerCount) {\n  // Distribute jobs round-robin across workerCount arrays\n  return [];\n}",
+      "language": "javascript",
+      "visibleTests": [
+        { "input": "batchJobs(['a','b','c'], 2)", "expected": "[[\"a\",\"c\"],[\"b\"]]", "description": "Distributes 3 jobs across 2 workers" },
+        { "input": "batchJobs(['j1','j2'], 2)", "expected": "[[\"j1\"],[\"j2\"]]", "description": "1 job per worker" }
+      ],
+      "hiddenTests": [
+        { "input": "batchJobs(['x'], 3)", "expected": "[[\"x\"],[],[]]", "description": "Creates all worker buckets even if some are empty" }
+      ],
+      "solutionHint": "Initialize `buckets = Array.from({ length: workerCount }, () => [])`, then push `jobs[i]` into `buckets[i % workerCount]`."
+    }
+  }
+]

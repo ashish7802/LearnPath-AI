@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    response.cookies.set('lp_session', token, getSessionCookieOptions());
+    response.cookies.set('lp_session', token, getSessionCookieOptions(req));
     return response;
   } catch (error) {
     console.error('Login error:', error);
